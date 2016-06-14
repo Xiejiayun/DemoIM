@@ -10,6 +10,11 @@ public class DefaultIMClient implements IMClient {
     }
 
     @Override
+    public void addFriend(String uid, String friendid) {
+
+    }
+
+    @Override
     public void message(String receiverid, String message) {
 
     }
