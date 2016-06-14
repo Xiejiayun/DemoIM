@@ -21,5 +21,7 @@ public interface IMServer {
      */
     void postMessage();
 
+    void listen();
+
 
 }
