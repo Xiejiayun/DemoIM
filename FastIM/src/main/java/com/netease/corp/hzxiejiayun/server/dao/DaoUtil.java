@@ -5,21 +5,29 @@ import java.sql.*;
 /**
  * Created by lab on 16-1-12.
  */
-public class BasicDao {
+public class DaoUtil {
 
     private static Connection con = null;
+
+
+    public DaoUtil() {
+    }
 
     public static Connection getConnection() {
         if (con == null)
             connectDB();
         return con;
     }
+
     public static void main(String[] args) {
         System.out.println("start connect to the database");
-        new BasicDao().connectDB();
+        new DaoUtil().connectDB();
         System.out.println("finish connect to the database");
     }
 
+    /**
+     * 连接数据库
+     */
     private static void connectDB() {
         String driverName = "com.mysql.jdbc.Driver";
         try {
@@ -64,5 +72,31 @@ public class BasicDao {
             }
         }
         return  resultSet;
+    }
+
+    /**
+     * 根据SQL语句执行相应的操作
+     * @param sql SQL语句
+     * @return 结果集合
+     */
+    public boolean executeSQL(String sql) {
+        boolean result = false;
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            result = stmt.execute(sql);
+        } catch (SQLException e ) {
+            e.printStackTrace();
+        } finally {
+            if (stmt != null)
+            {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return  result;
     }
 }
