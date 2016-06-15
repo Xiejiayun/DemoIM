@@ -7,12 +7,12 @@ import java.sql.SQLException;
 /**
  * Created by lab on 16-1-12.
  */
-public class Dao {
+public class BasicDao {
 
 
     public static void main(String[] args) {
         System.out.println("start connect to the database");
-        new Dao().connectDB();
+        new BasicDao().connectDB();
         System.out.println("finish connect to the database");
     }
 
@@ -23,7 +23,6 @@ public class Dao {
             String serverName = "127.0.0.1";
             String database = "imdb";
             String url = "jdbc:mysql://" + serverName + "/" + database;
-
             String username = "root";
             String password = "";
             Connection connection = DriverManager.getConnection(url, username, password);
