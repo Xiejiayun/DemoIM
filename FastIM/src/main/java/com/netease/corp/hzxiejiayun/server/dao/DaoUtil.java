@@ -53,7 +53,7 @@ public class DaoUtil {
      * @param sql SQL语句
      * @return 结果集合
      */
-    public ResultSet doSql(String sql) {
+    public static ResultSet doSql(String sql) {
         ResultSet resultSet = null;
         Statement stmt = null;
         try {
@@ -79,7 +79,7 @@ public class DaoUtil {
      * @param sql SQL语句
      * @return 结果集合
      */
-    public boolean executeSQL(String sql) {
+    public static boolean executeSQL(String sql) {
         boolean result = false;
         Statement stmt = null;
         try {
