@@ -1,4 +1,4 @@
-package com.netease.corp.hzxiejiayun.server.handler;
+package com.netease.corp.hzxiejiayun.server.servicehandler;
 
 import com.netease.corp.hzxiejiayun.server.model.MessageModel;
 
