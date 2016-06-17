@@ -4,8 +4,9 @@ package com.netease.corp.hzxiejiayun.client;
 import com.netease.corp.hzxiejiayun.client.model.RequestModel;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -111,16 +112,25 @@ public class DefaultIMClient implements IMClient {
 
     }
 
-    public void basicInstruction() {
+    public void basicInstruction(Scanner in) {
         System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
         System.out.println("||-------Operation Menu-------||");
         System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
         System.out.println("||------Choose operations-----||");
-        System.out.println("1 Login");
-        System.out.println("2 Friend List");
-        System.out.println("3 Message Service");
+        System.out.println("1 ：Login");
+        System.out.println("2 ：Friend List");
+        System.out.println("3 ：Message Service");
+        String command = in.next();
+        if (command != null) {
+            switch (command) {
+                case "1" : loginInstruction(in);break;
+                case "2" : friendListInstruction(in);break;
+                default:break;
+            }
+
+        }
     }
 
     public void loginInstruction(Scanner in) {
@@ -136,6 +146,18 @@ public class DefaultIMClient implements IMClient {
         login(username, password);
     }
 
+    public void friendListInstruction(Scanner in) {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||-------FiendList Menu-------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        String username = in.next();
+        System.out.println("||-Please input your password-||");
+        String password = in.next();
+        login(username, password);
+    }
+
     public void prepareMetaData() {
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
@@ -144,7 +166,5 @@ public class DefaultIMClient implements IMClient {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
     }
-
 }
