@@ -118,7 +118,6 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println(new String(receive.array()));
             selectionKey.interestOps(SelectionKey.OP_WRITE);
-            System.out.println("Readable");
         } else if (selectionKey.isWritable()) {
             send.flip();
             client = (SocketChannel)selectionKey.channel();
@@ -128,7 +127,6 @@ public class DefaultIMServer implements IMServer {
                 e.printStackTrace();
             }
             selectionKey.interestOps(SelectionKey.OP_READ);
-            System.out.println("Writable");
         } else if (selectionKey.isConnectable()) {
             System.out.println("Connectable");
         }
