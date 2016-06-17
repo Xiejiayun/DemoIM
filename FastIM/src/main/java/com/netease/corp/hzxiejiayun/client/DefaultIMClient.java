@@ -1,12 +1,18 @@
 package com.netease.corp.hzxiejiayun.client;
 
+
+import com.netease.corp.hzxiejiayun.client.model.RequestModel;
+
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.io.ObjectOutputStream;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -16,26 +22,29 @@ public class DefaultIMClient implements IMClient {
 
     SocketChannel socketChannel = null;
     Selector selector = null;
-    ByteBuffer send = ByteBuffer.wrap("data come frpom client".getBytes());
+    ByteBuffer send = ByteBuffer.allocate(1024);
     ByteBuffer receive = ByteBuffer.allocate(1024);
 
     public DefaultIMClient() {
     }
 
 
-
     public static void main(String[] args) {
         DefaultIMClient client = new DefaultIMClient();
-        Scanner sin = new Scanner(System.in);
-        System.out.println("Please input the user id");
-        String uid = sin.next();
-        System.out.println("Please input the password");
-        String pwd = sin.next();
-        client.connect(uid, pwd);
+        Scanner in = new Scanner(System.in);
+        client.prepareMetaData();
+        client.loginInstruction(in);
+
+
     }
 
     @Override
-    public void connect(String uid, String pwd) {
+    public void login(String username, String password) {
+        RequestModel requestModel = new RequestModel();
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("username", username);
+        extras.put("password", password);
+        requestModel.setExtras(extras);
 
         try {
             socketChannel = SocketChannel.open();
@@ -43,7 +52,6 @@ public class DefaultIMClient implements IMClient {
             socketChannel.configureBlocking(false);
             socketChannel.connect(new InetSocketAddress("localhost", 6666));
             socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,16 +62,16 @@ public class DefaultIMClient implements IMClient {
                     continue;
                 }
                 Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
-
                     socketChannel = (SocketChannel) selectionKey.channel();
                     if (selectionKey.isConnectable()) {
                         if (socketChannel.isConnectionPending()) {
                             socketChannel.finishConnect();
                             System.out.println("Connect completely");
                             try {
+                                send = ByteBuffer.wrap(requestModel.toString().getBytes());
                                 socketChannel.write(send);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -102,4 +110,41 @@ public class DefaultIMClient implements IMClient {
     public void message(String receiverid, String message) {
 
     }
+
+    public void basicInstruction() {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||-------Operation Menu-------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||------Choose operations-----||");
+        System.out.println("1 Login");
+        System.out.println("2 Friend List");
+        System.out.println("3 Message Service");
+    }
+
+    public void loginInstruction(Scanner in) {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||-------Login Menu-----------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||---Please input your name---||");
+        String username = in.next();
+        System.out.println("||-Please input your password-||");
+        String password = in.next();
+        login(username, password);
+    }
+
+    public void prepareMetaData() {
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            String host = inetAddress.getHostAddress();
+            System.out.println("Host address is " + host);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

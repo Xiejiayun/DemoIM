@@ -27,7 +27,6 @@ public class DefaultIMServer implements IMServer {
     public static void main(String[] args) {
         DefaultIMServer defaultIMServer = new DefaultIMServer(port);
         defaultIMServer.listen();
-
     }
 
     public DefaultIMServer() {

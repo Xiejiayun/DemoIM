@@ -1,11 +1,12 @@
-package com.netease.corp.hzxiejiayun.server.model;
+package com.netease.corp.hzxiejiayun.client.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Created by hzxiejiayun on 2016/6/15.
+ * Created by hzxiejiayun on 2016/6/17.
  */
-public class ResponseModel {
+public class RequestModel implements Serializable{
     //协议的类型
     private String protocolType;
     //主机的IP地址
@@ -75,7 +76,7 @@ public class ResponseModel {
                 ", username='" + username + '\'' +
                 ", datetime='" + datetime + '\'' +
                 ", userStatus='" + userStatus + '\'' +
-                ", extras=" + extras +
+                ", extras=" + extras.toString() +
                 '}';
     }
 }
