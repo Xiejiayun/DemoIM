@@ -7,6 +7,8 @@ package com.netease.corp.hzxiejiayun.server.acceptor;
  */
 public class Acceptor extends Thread{
 
+    private static int running = 0; //0:running 1:stopped
+
     @Override
     public void run() {
 

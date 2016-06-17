@@ -3,7 +3,7 @@ package com.netease.corp.hzxiejiayun.server.dao;
 import java.sql.*;
 
 /**
- * Created by lab on 16-1-12.
+ * Created by hzxiejiayun on 2016/6/15.
  */
 public class DaoUtil {
 
