@@ -1,9 +1,9 @@
-package com.netease.corp.hzxiejiayun.server.model;
+package com.netease.corp.hzxiejiayun.common.model;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
  */
-public class MessageModel {
+public class BaseModel {
     //消息id
     private String messageid;
     private String senderid;

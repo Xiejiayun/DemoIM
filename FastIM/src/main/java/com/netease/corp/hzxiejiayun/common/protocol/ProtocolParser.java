@@ -1,4 +1,4 @@
-package com.netease.corp.hzxiejiayun.client.protocol;
+package com.netease.corp.hzxiejiayun.common.protocol;
 
 /**
  * Created by hzxiejiayun on 2016/6/16.

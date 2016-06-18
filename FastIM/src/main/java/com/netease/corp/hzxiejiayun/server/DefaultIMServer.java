@@ -1,6 +1,6 @@
 package com.netease.corp.hzxiejiayun.server;
 
-import com.netease.corp.hzxiejiayun.server.model.UserModel;
+import com.netease.corp.hzxiejiayun.common.model.UserModel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

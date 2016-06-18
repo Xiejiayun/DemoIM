@@ -1,13 +1,13 @@
-package com.netease.corp.hzxiejiayun.server.model;
+package com.netease.corp.hzxiejiayun.common.model;
 
 import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class ResponseModel {
+public class RequestModel {
     //协议的类型
-    private String protocolType;
+    private int protocolType;//1:login 2:add friend 3:send message
     //主机的IP地址
     private String host;
     //用户名
@@ -15,15 +15,15 @@ public class ResponseModel {
     //时间戳
     private String datetime;
     //用户的登录状态
-    private String userStatus;
+    private int userStatus;
     //用来存放其他类型数据的Map
     private Map<String, String> extras;
 
-    public String getProtocolType() {
+    public int getProtocolType() {
         return protocolType;
     }
 
-    public void setProtocolType(String protocolType) {
+    public void setProtocolType(int protocolType) {
         this.protocolType = protocolType;
     }
 
@@ -51,11 +51,11 @@ public class ResponseModel {
         this.datetime = datetime;
     }
 
-    public String getUserStatus() {
+    public int getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(String userStatus) {
+    public void setUserStatus(int userStatus) {
         this.userStatus = userStatus;
     }
 

@@ -1,4 +1,4 @@
-package com.netease.corp.hzxiejiayun.server.model;
+package com.netease.corp.hzxiejiayun.common.model;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
