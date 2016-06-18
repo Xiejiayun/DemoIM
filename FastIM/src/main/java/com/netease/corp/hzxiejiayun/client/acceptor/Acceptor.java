@@ -1,5 +1,6 @@
 package com.netease.corp.hzxiejiayun.client.acceptor;
 
+import java.net.ServerSocket;
 import java.nio.channels.ServerSocketChannel;
 
 /**
@@ -9,7 +10,9 @@ import java.nio.channels.ServerSocketChannel;
  */
 public class Acceptor extends Thread {
 
-    protected ServerSocketChannel serverSock = null;
+    private ServerSocketChannel serverSock = null;
+
+    private ServerSocket serverSocket = null;
 
     public static boolean running = false;
     @Override
