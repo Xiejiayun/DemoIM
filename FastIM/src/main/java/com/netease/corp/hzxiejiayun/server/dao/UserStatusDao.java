@@ -1,28 +1,38 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
 import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
+import com.netease.corp.hzxiejiayun.server.dataobject.UserStatusDO;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class UserStatusDao extends DaoSupport{
-    @Override
+public class UserStatusDao{
+
     boolean add(BaseDO baseDO) {
-        return false;
+        boolean result = false;
+        String sql = "add ";
+        DaoUtil.getConnection();
+        result = DaoUtil.executeSQL(sql);
+        return result;
     }
 
-    @Override
     boolean update(BaseDO baseDO) {
-        return false;
+        boolean result = false;
+        String sql = "update ";
+        DaoUtil.getConnection();
+        result = DaoUtil.executeSQL(sql);
+        return result;
     }
 
-    @Override
     boolean delete(int id) {
-        return false;
+        boolean result = false;
+        String sql = "delete ";
+        DaoUtil.getConnection();
+        result = DaoUtil.executeSQL(sql);
+        return result;
     }
 
-    @Override
-    BaseDO query(int id) {
+    UserStatusDO query(int id) {
         return null;
     }
 }

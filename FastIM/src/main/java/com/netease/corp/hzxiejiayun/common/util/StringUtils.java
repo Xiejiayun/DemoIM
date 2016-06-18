@@ -7,7 +7,7 @@ public class StringUtils {
 
     public static String trim(String str) {
         String result = null;
-        
+
         return result;
     }
 }

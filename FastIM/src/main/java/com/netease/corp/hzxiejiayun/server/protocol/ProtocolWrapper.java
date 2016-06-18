@@ -7,4 +7,5 @@ package com.netease.corp.hzxiejiayun.server.protocol;
  *
  */
 public class ProtocolWrapper {
+
 }
