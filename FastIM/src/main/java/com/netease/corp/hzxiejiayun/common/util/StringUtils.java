@@ -27,6 +27,32 @@ public class StringUtils {
         return "";
     }
 
+    /**
+     * 判断字符串是否为null或者值为""
+     * @param str
+     * @return
+     */
+    public static boolean isEmpty(String str) {
+        if (str == null || str.length() ==0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断字符串内容是否为空
+     * @param str
+     * @return
+     */
+    public static boolean isBlank(String str) {
+        if (str == null || str.length() ==0) {
+            return true;
+        }
+        if (trim(str).length() == 0)
+            return true;
+        return false;
+    }
+
     public static void main(String[] args) {
         String s = null;
         System.out.println(StringUtils.trim(s));
