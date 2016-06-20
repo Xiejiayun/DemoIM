@@ -1,7 +1,8 @@
 package com.netease.corp.hzxiejiayun.client;
 
 
-import com.netease.corp.hzxiejiayun.client.model.RequestModel;
+import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
+import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -72,7 +73,7 @@ public class DefaultIMClient implements IMClient {
                             socketChannel.finishConnect();
                             System.out.println("Connect completely");
                             try {
-                                send = ByteBuffer.wrap(requestModel.toString().getBytes());
+                                send = CommonWriter.setObject(requestModel);
                                 socketChannel.write(send);
                             } catch (IOException e) {
                                 e.printStackTrace();

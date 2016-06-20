@@ -1,8 +1,12 @@
 package com.netease.corp.hzxiejiayun.server;
 
+import com.netease.corp.hzxiejiayun.common.io.CommonReader;
+import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.UserModel;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
@@ -116,7 +120,7 @@ public class DefaultIMServer implements IMServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println(new String(receive.array()));
+            RequestModel model = (RequestModel) CommonReader.getObject(receive);
             selectionKey.interestOps(SelectionKey.OP_WRITE);
         } else if (selectionKey.isWritable()) {
             send.flip();
@@ -131,4 +135,5 @@ public class DefaultIMServer implements IMServer {
             System.out.println("Connectable");
         }
     }
+
 }
