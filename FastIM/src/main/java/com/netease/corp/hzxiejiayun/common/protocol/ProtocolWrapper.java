@@ -5,6 +5,8 @@ import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 
 /**
  * Created by hzxiejiayun on 2016/6/16.
+ * <p/>
+ * 协议包装器，对需要传输的对象使用协议进行包装
  */
 public class ProtocolWrapper {
 

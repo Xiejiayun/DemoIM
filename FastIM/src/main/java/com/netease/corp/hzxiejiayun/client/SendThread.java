@@ -33,7 +33,7 @@ public class SendThread extends Thread {
                 InputStreamReader input = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader(input);
                 sendText = br.readLine();
-                extras.put("message",sendText);
+                extras.put("message", sendText);
                 requestModel.setExtras(extras);
                 sendBuf = CommonWriter.setObject(requestModel);
                 sendBuf.flip();

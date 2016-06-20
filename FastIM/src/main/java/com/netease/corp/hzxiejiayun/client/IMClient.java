@@ -7,12 +7,14 @@ public interface IMClient {
 
     /**
      * 根据用户名和密码连接服务器
+     *
      * @param uid 用户id
      * @param pwd 用户密码
      */
     void login(String uid, String pwd);
 
-    void addFriend(String uid, String friendid);
+
+    void friend(String uid, String friendid);
 
     void message(String receiverid, String message);
 

@@ -5,7 +5,7 @@ import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class RelationDao extends DaoSupport{
+public class RelationDao extends DaoSupport {
 
     @Override
     boolean add(BaseDO baseDO) {

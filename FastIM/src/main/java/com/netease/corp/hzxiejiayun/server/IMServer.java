@@ -11,6 +11,7 @@ public interface IMServer {
 
     /**
      * 根据用户的id获取其所有的好友列表
+     *
      * @param uid
      * @return
      */
@@ -26,8 +27,6 @@ public interface IMServer {
     void userLoginAuthorize();
 
     void friendRequest();
-
-
 
 
 }

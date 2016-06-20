@@ -2,16 +2,17 @@ package com.netease.corp.hzxiejiayun.common.protocol;
 
 import com.netease.corp.hzxiejiayun.common.model.ConnectionModel;
 import com.netease.corp.hzxiejiayun.common.model.LoginModel;
+import com.netease.corp.hzxiejiayun.common.model.MessageModel;
 import com.netease.corp.hzxiejiayun.common.model.RequestResponseModel;
 
 import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
- *
- *对于发送过来的请求进行解析
+ * <p/>
+ * 请求解析器，对于发送过来的请求进行解析
  */
-public class RequestParser implements ProtocolParser{
+public class RequestParser implements ProtocolParser {
 
     @Override
     public void parseHeader(RequestResponseModel model) {
@@ -35,19 +36,38 @@ public class RequestParser implements ProtocolParser{
         int protocolType = model.getProtocolType();//0:connection 1:login 2:add friend 3:send message
 
         switch (protocolType) {
-            case 0: parseConnection(model.getExtras());break;//处理连接的情况
-            case 1: parseLogin(model.getExtras());break;//处理登录的情况
-            case 2: parseFriend(model.getExtras());break;//处理添加好友的情况
-            case 3: parseMessage(model.getExtras());break;//处理发送消息的情况
-            default:break;//
+            case 0:
+                parseConnection(model.getExtras());
+                break;//处理连接的情况
+            case 1:
+                parseLogin(model.getExtras());
+                break;//处理登录的情况
+            case 2:
+                parseFriend(model.getExtras());
+                break;//处理添加好友的情况
+            case 3:
+                parseMessage(model.getExtras());
+                break;//处理发送消息的情况
+            default:
+                break;//
         }
 
     }
 
+    /**
+     * 解析连接时候的连接模型
+     * @param extras 每次请求中所附带的信息
+     * @return ConnectionModel
+     */
     private ConnectionModel parseConnection(Map<String, String> extras) {
         return null;
     }
 
+    /**
+     * 解析登录时候的登录模型
+     * @param extras 每次请求中所附带的信息
+     * @return LoginModel
+     */
     private LoginModel parseLogin(Map<String, String> extras) {
         return null;
     }
@@ -55,6 +75,12 @@ public class RequestParser implements ProtocolParser{
     private void parseFriend(Map<String, String> extras) {
     }
 
-    private void parseMessage(Map<String, String> extras) {
+    /**
+     * 解析聊天时候的消息模型
+     * @param extras 每次请求中所附带的信息
+     * @return MessageModel
+     */
+    private MessageModel parseMessage(Map<String, String> extras) {
+        return null;
     }
 }

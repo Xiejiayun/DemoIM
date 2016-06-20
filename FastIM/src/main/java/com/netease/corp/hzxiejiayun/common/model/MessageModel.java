@@ -2,6 +2,8 @@ package com.netease.corp.hzxiejiayun.common.model;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
+ * <p/>
+ * 通信过程中的消息模型
  */
 public class MessageModel extends BaseModel {
 

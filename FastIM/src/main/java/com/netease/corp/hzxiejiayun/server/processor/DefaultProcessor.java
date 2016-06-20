@@ -6,7 +6,7 @@ import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 /**
  * Created by hzxiejiayun on 2016/6/17.
  */
-public class DefaultProcessor implements Processor{
+public class DefaultProcessor implements Processor {
     @Override
     public RequestModel createRequest() {
         return null;
@@ -19,6 +19,6 @@ public class DefaultProcessor implements Processor{
 
     @Override
     public void service(RequestModel request, ResponseModel response) {
-        
+
     }
 }

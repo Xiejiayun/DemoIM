@@ -2,6 +2,8 @@ package com.netease.corp.hzxiejiayun.common.model;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
+ * <p/>
+ * 基础对象模型，主要存储的内容就是传输的元信息
  */
 public class BaseModel {
     //消息id,每个客户端从1开始递增

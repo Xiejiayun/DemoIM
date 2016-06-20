@@ -6,7 +6,7 @@ import com.netease.corp.hzxiejiayun.server.dataobject.OperationDO;
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class OperationDao{
+public class OperationDao {
     boolean add(BaseDO baseDO) {
         boolean result = false;
         String sql = "add ";

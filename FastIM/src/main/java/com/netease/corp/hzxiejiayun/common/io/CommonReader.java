@@ -7,8 +7,17 @@ import java.nio.ByteBuffer;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
+ * <p/>
+ * 通用的IO读取器
  */
 public class CommonReader {
+    
+    /**
+     * 从ByteBuffer中读取对应的序列化对象
+     *
+     * @param byteBuffer
+     * @return
+     */
     public static Object getObject(ByteBuffer byteBuffer) {
         Object obj = null;
         try {

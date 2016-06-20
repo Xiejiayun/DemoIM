@@ -50,6 +50,7 @@ public class DaoUtil {
 
     /**
      * 根据SQL语句执行相应的操作
+     *
      * @param sql SQL语句
      * @return 结果集合
      */
@@ -59,11 +60,10 @@ public class DaoUtil {
         try {
             stmt = con.createStatement();
             resultSet = stmt.executeQuery(sql);
-        } catch (SQLException e ) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (stmt != null)
-            {
+            if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException e) {
@@ -71,11 +71,12 @@ public class DaoUtil {
                 }
             }
         }
-        return  resultSet;
+        return resultSet;
     }
 
     /**
      * 根据SQL语句执行相应的操作
+     *
      * @param sql SQL语句
      * @return 结果集合
      */
@@ -85,11 +86,10 @@ public class DaoUtil {
         try {
             stmt = con.createStatement();
             result = stmt.execute(sql);
-        } catch (SQLException e ) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (stmt != null)
-            {
+            if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException e) {
@@ -97,6 +97,6 @@ public class DaoUtil {
                 }
             }
         }
-        return  result;
+        return result;
     }
 }

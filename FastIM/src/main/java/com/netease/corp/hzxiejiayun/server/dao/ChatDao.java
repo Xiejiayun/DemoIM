@@ -6,7 +6,7 @@ import com.netease.corp.hzxiejiayun.server.dataobject.ChatDO;
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class ChatDao{
+public class ChatDao {
     boolean add(ChatDO chatDO) {
         boolean result = false;
 //        String sql = "insert into users(uid, uname, passwd) values('"+uid+"','"+uname+"','"+passwd+"')";
@@ -15,8 +15,7 @@ public class ChatDao{
         return result;
     }
 
-    boolean update(ChatDO chatDO)
-    {
+    boolean update(ChatDO chatDO) {
         boolean result = false;
         String sql = "update";
         DaoUtil.getConnection();

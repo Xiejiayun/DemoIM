@@ -67,12 +67,12 @@ public class DefaultIMServer implements IMServer {
 
     @Override
     public void listen() {
-        while(true) {
+        while (true) {
             try {
                 selector.select();
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iterator = selectionKeys.iterator();
-                while(iterator.hasNext()) {
+                while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
                     handleKey(selectionKey);
@@ -98,7 +98,7 @@ public class DefaultIMServer implements IMServer {
         ServerSocketChannel sss = null;
         SocketChannel client = null;
         if (selectionKey.isAcceptable()) {
-            sss = (ServerSocketChannel)selectionKey.channel();
+            sss = (ServerSocketChannel) selectionKey.channel();
             try {
                 client = sss.accept();
                 client.configureBlocking(false);
@@ -108,7 +108,7 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
-            client = (SocketChannel)selectionKey.channel();
+            client = (SocketChannel) selectionKey.channel();
             receive.clear();
             try {
                 client.read(receive);
@@ -122,7 +122,7 @@ public class DefaultIMServer implements IMServer {
             selectionKey.interestOps(SelectionKey.OP_READ);
         } else if (selectionKey.isWritable()) {
             send.flip();
-            client = (SocketChannel)selectionKey.channel();
+            client = (SocketChannel) selectionKey.channel();
             try {
                 client.write(send);
             } catch (IOException e) {

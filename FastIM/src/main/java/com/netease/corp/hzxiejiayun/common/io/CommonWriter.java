@@ -8,9 +8,17 @@ import java.nio.ByteBuffer;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
+ * <p/>
+ * 通用的IO存储器
  */
 public class CommonWriter {
 
+    /**
+     * 将可以序列化的对象转换为ByteBuffer的形式
+     *
+     * @param obj
+     * @return
+     */
     public static ByteBuffer setObject(Serializable obj) {
         ByteBuffer result = null;
         try {

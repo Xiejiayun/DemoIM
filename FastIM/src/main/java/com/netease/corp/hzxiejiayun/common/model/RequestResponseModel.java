@@ -5,8 +5,10 @@ import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
+ * <p/>
+ * 最基础的通信对象，其中包含一系列通信的参数
  */
-public class RequestResponseModel implements Serializable{
+public class RequestResponseModel implements Serializable {
     //协议的类型
     private int protocolType;//0:connection 1:login 2:add friend 3:send message
     //主机的IP地址

@@ -6,7 +6,7 @@ import com.netease.corp.hzxiejiayun.server.dataobject.UserStatusDO;
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
-public class UserStatusDao{
+public class UserStatusDao {
 
     boolean add(BaseDO baseDO) {
         boolean result = false;

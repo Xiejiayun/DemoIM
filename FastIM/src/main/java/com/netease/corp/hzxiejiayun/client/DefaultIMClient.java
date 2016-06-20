@@ -107,7 +107,7 @@ public class DefaultIMClient implements IMClient {
     }
 
     @Override
-    public void addFriend(String uid, String friendid) {
+    public void friend(String uid, String friendid) {
 
     }
 

@@ -2,10 +2,9 @@ package com.netease.corp.hzxiejiayun.common.model;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
- *
+ * <p/>
  * 主要用来存储用户的模型
  */
-
 public class UserModel {
     //用户id
     private String uid;

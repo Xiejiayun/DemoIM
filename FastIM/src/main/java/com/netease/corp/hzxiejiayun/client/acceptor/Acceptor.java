@@ -15,9 +15,10 @@ public class Acceptor extends Thread {
     private ServerSocket serverSocket = null;
 
     public static boolean running = false;
+
     @Override
     public void run() {
-        while(running) {
+        while (running) {
 
         }
     }

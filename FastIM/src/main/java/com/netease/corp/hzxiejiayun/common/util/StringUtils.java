@@ -13,7 +13,7 @@ public class StringUtils {
             return "";
         }
         char tmp[] = str.toCharArray();
-        for (int i=0, j=tmp.length-1; i<j; ) {
+        for (int i = 0, j = tmp.length - 1; i < j; ) {
             if (tmp[i] == ' ') {
                 i++;
                 continue;
@@ -22,18 +22,19 @@ public class StringUtils {
                 j--;
                 continue;
             }
-            return str.substring(i, j+1);
+            return str.substring(i, j + 1);
         }
         return "";
     }
 
     /**
      * 判断字符串是否为null或者值为""
+     *
      * @param str
      * @return
      */
     public static boolean isEmpty(String str) {
-        if (str == null || str.length() ==0) {
+        if (str == null || str.length() == 0) {
             return true;
         }
         return false;
@@ -41,11 +42,12 @@ public class StringUtils {
 
     /**
      * 判断字符串内容是否为空
+     *
      * @param str
      * @return
      */
     public static boolean isBlank(String str) {
-        if (str == null || str.length() ==0) {
+        if (str == null || str.length() == 0) {
             return true;
         }
         if (trim(str).length() == 0)
