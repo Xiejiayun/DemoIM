@@ -119,7 +119,7 @@ public class DefaultIMServer implements IMServer {
             Object obj = CommonReader.getObject(receive);
             RequestModel model = (RequestModel) obj;
             System.out.println(model);
-//            selectionKey.interestOps(SelectionKey.OP_WRITE);
+            selectionKey.interestOps(SelectionKey.OP_READ);
         } else if (selectionKey.isWritable()) {
             send.flip();
             client = (SocketChannel)selectionKey.channel();
@@ -128,7 +128,6 @@ public class DefaultIMServer implements IMServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            selectionKey.interestOps(SelectionKey.OP_READ);
         } else if (selectionKey.isConnectable()) {
             System.out.println("Connectable");
         }

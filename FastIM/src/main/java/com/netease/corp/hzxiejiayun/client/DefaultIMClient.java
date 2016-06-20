@@ -76,6 +76,7 @@ public class DefaultIMClient implements IMClient {
                                 send = CommonWriter.setObject(requestModel);
                                 System.out.println(send.toString());
                                 socketChannel.write(send);
+                                new SendThread(socketChannel).start();
                             } catch (IOException e) {
                                 System.out.println("发生了IO异常");
                             }
@@ -128,9 +129,14 @@ public class DefaultIMClient implements IMClient {
         String command = in.next();
         if (command != null) {
             switch (command) {
-                case "1" : loginInstruction(in);break;
-                case "2" : friendListInstruction(in);break;
-                default:break;
+                case "1":
+                    loginInstruction(in);
+                    break;
+                case "2":
+                    friendListInstruction(in);
+                    break;
+                default:
+                    break;
             }
 
         }
