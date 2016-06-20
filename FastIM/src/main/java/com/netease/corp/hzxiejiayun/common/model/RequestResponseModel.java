@@ -1,11 +1,12 @@
 package com.netease.corp.hzxiejiayun.common.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
  */
-public class RequestResponseModel{
+public class RequestResponseModel implements Serializable{
     //协议的类型
     private int protocolType;//0:connection 1:login 2:add friend 3:send message
     //主机的IP地址
