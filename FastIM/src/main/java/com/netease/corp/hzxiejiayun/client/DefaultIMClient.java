@@ -77,7 +77,7 @@ public class DefaultIMClient implements IMClient {
                                 System.out.println(send.toString());
                                 socketChannel.write(send);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                System.out.println("发生了IO异常");
                             }
                         }
                     } else if (selectionKey.isReadable()) {
@@ -86,7 +86,7 @@ public class DefaultIMClient implements IMClient {
                             socketChannel.read(receive);
                             System.out.println(new String(receive.array()));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            System.out.println("发生了IO异常");
                         }
                     } else if (selectionKey.isWritable()) {
                         receive.flip();
@@ -95,7 +95,7 @@ public class DefaultIMClient implements IMClient {
                             send = CommonWriter.setObject(requestModel);
                             socketChannel.write(send);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            System.out.println("发生了IO异常");
                         }
                     }
                 }
