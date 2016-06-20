@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class ResponseModel {
     //协议的类型
-    private String protocolType;
+    private int protocolType;//1:login 2:add friend 3:send message
     //主机的IP地址
     private String host;
     //用户名
@@ -19,11 +19,11 @@ public class ResponseModel {
     //用来存放其他类型数据的Map
     private Map<String, String> extras;
 
-    public String getProtocolType() {
+    public int getProtocolType() {
         return protocolType;
     }
 
-    public void setProtocolType(String protocolType) {
+    public void setProtocolType(int protocolType) {
         this.protocolType = protocolType;
     }
 

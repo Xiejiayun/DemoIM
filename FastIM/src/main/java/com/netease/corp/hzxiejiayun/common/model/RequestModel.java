@@ -10,10 +10,12 @@ public class RequestModel {
     private int protocolType;//1:login 2:add friend 3:send message
     //主机的IP地址
     private String host;
-    //用户名
-    private String username;
+    //发送者的用户id
+    private String senderid;
+    //接收者的用户id，如果接收者为服务器，则这项为空
+    private String receiverid;
     //时间戳
-    private String datetime;
+    private String timestamp;
     //用户的登录状态
     private int userStatus;
     //用来存放其他类型数据的Map
@@ -35,20 +37,12 @@ public class RequestModel {
         this.host = host;
     }
 
-    public String getUsername() {
-        return username;
+    public String getTimestamp() {
+        return timestamp;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getDatetime() {
-        return datetime;
-    }
-
-    public void setDatetime(String datetime) {
-        this.datetime = datetime;
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public int getUserStatus() {
@@ -57,6 +51,22 @@ public class RequestModel {
 
     public void setUserStatus(int userStatus) {
         this.userStatus = userStatus;
+    }
+
+    public String getSenderid() {
+        return senderid;
+    }
+
+    public void setSenderid(String senderid) {
+        this.senderid = senderid;
+    }
+
+    public String getReceiverid() {
+        return receiverid;
+    }
+
+    public void setReceiverid(String receiverid) {
+        this.receiverid = receiverid;
     }
 
     public Map<String, String> getExtras() {
@@ -70,12 +80,13 @@ public class RequestModel {
     @Override
     public String toString() {
         return "RequestModel{" +
-                "protocolType='" + protocolType + '\'' +
+                "protocolType=" + protocolType +
                 ", host='" + host + '\'' +
-                ", username='" + username + '\'' +
-                ", datetime='" + datetime + '\'' +
-                ", userStatus='" + userStatus + '\'' +
-                ", extras=" + extras +
+                ", senderid='" + senderid + '\'' +
+                ", receiverid='" + receiverid + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", userStatus=" + userStatus +
+                ", extras=" + extras.toString() +
                 '}';
     }
 }
