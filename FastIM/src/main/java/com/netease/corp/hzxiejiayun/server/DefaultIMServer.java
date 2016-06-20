@@ -34,23 +34,18 @@ public class DefaultIMServer implements IMServer {
     }
 
     public DefaultIMServer() {
-        try {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-            ServerSocket serverSocket = serverSocketChannel.socket();
-            serverSocket.bind(new InetSocketAddress(port));
-            selector = Selector.open();
-            serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        init(new InetSocketAddress(port));
     }
 
     public DefaultIMServer(int port) {
+        init(new InetSocketAddress(port));
+    }
+
+    private void init(InetSocketAddress endpoint) {
         try {
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             ServerSocket serverSocket = serverSocketChannel.socket();
-            serverSocket.bind(new InetSocketAddress(port));
+            serverSocket.bind(endpoint);
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
@@ -117,11 +112,14 @@ public class DefaultIMServer implements IMServer {
             receive.clear();
             try {
                 client.read(receive);
+                receive.flip();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            RequestModel model = (RequestModel) CommonReader.getObject(receive);
-            selectionKey.interestOps(SelectionKey.OP_WRITE);
+            Object obj = CommonReader.getObject(receive);
+            RequestModel model = (RequestModel) obj;
+            System.out.println(model);
+//            selectionKey.interestOps(SelectionKey.OP_WRITE);
         } else if (selectionKey.isWritable()) {
             send.flip();
             client = (SocketChannel)selectionKey.channel();
@@ -130,7 +128,7 @@ public class DefaultIMServer implements IMServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            selectionKey.interestOps(SelectionKey.OP_READ);
+//            selectionKey.interestOps(SelectionKey.OP_READ);
         } else if (selectionKey.isConnectable()) {
             System.out.println("Connectable");
         }

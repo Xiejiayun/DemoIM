@@ -17,7 +17,6 @@ public class CommonWriter {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(obj);
-            oos.flush();
             byte[] tmp = baos.toByteArray();
             result = ByteBuffer.wrap(tmp);
             baos.close();

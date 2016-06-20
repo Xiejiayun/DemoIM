@@ -24,7 +24,7 @@ public class DefaultIMClient implements IMClient {
 
     SocketChannel socketChannel = null;
     Selector selector = null;
-    ByteBuffer send = ByteBuffer.allocate(1024);
+    ByteBuffer send = null;
     ByteBuffer receive = ByteBuffer.allocate(1024);
 
     public DefaultIMClient() {
@@ -53,7 +53,7 @@ public class DefaultIMClient implements IMClient {
             selector = Selector.open();
             socketChannel.configureBlocking(false);
             socketChannel.connect(new InetSocketAddress("localhost", 6666));
-            socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -74,6 +74,7 @@ public class DefaultIMClient implements IMClient {
                             System.out.println("Connect completely");
                             try {
                                 send = CommonWriter.setObject(requestModel);
+                                System.out.println(send.toString());
                                 socketChannel.write(send);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -91,6 +92,7 @@ public class DefaultIMClient implements IMClient {
                         receive.flip();
                         try {
                             send.flip();
+                            send = CommonWriter.setObject(requestModel);
                             socketChannel.write(send);
                         } catch (IOException e) {
                             e.printStackTrace();
