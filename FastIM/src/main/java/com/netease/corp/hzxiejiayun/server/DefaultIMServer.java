@@ -2,7 +2,10 @@ package com.netease.corp.hzxiejiayun.server;
 
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
+import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.model.UserModel;
+import com.netease.corp.hzxiejiayun.server.processor.DefaultProcessor;
+import com.netease.corp.hzxiejiayun.server.processor.Processor;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,18 +37,18 @@ public class DefaultIMServer implements IMServer {
     }
 
     public DefaultIMServer() {
-        init(new InetSocketAddress(port));
+        init(port);
     }
 
     public DefaultIMServer(int port) {
-        init(new InetSocketAddress(port));
+        init(port);
     }
 
-    private void init(InetSocketAddress endpoint) {
+    private void init(int port) {
         try {
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             ServerSocket serverSocket = serverSocketChannel.socket();
-            serverSocket.bind(endpoint);
+            serverSocket.bind(new InetSocketAddress(port));
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
@@ -64,7 +67,6 @@ public class DefaultIMServer implements IMServer {
 
     }
 
-
     @Override
     public void listen() {
         while (true) {
@@ -78,7 +80,7 @@ public class DefaultIMServer implements IMServer {
                     handleKey(selectionKey);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("发生了IO异常");
             }
 
         }
@@ -117,8 +119,9 @@ public class DefaultIMServer implements IMServer {
                 e.printStackTrace();
             }
             Object obj = CommonReader.getObject(receive);
-            RequestModel model = (RequestModel) obj;
-            System.out.println(model);
+            RequestModel request = (RequestModel) obj;
+            System.out.println(request);
+            handleRequest(request);
             selectionKey.interestOps(SelectionKey.OP_READ);
         } else if (selectionKey.isWritable()) {
             send.flip();
@@ -133,4 +136,9 @@ public class DefaultIMServer implements IMServer {
         }
     }
 
+    private void handleRequest(RequestModel request) {
+        Processor processor = new DefaultProcessor();
+        ResponseModel response = processor.createResponse();
+        processor.service(request, response);
+    }
 }

@@ -10,7 +10,7 @@ import java.nio.channels.ServerSocketChannel;
  */
 public class Acceptor extends Thread {
 
-    private ServerSocketChannel serverSock = null;
+    private ServerSocketChannel serverSocketChannel = null;
 
     private ServerSocket serverSocket = null;
 

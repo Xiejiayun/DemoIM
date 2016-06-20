@@ -36,6 +36,7 @@ public class SendThread extends Thread {
                 extras.put("message", sendText);
                 requestModel.setExtras(extras);
                 sendBuf = CommonWriter.setObject(requestModel);
+                System.out.println(requestModel);
                 sendBuf.flip();
                 client.write(sendBuf);
             } catch (IOException e) {
