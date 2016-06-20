@@ -9,6 +9,9 @@ public class RelationDao extends DaoSupport {
 
     @Override
     boolean add(BaseDO baseDO) {
+        boolean result = false;
+        String sql = "insert into relation()";
+
         return false;
     }
 

@@ -60,6 +60,8 @@ public class RequestParser implements ProtocolParser {
      * @return ConnectionModel
      */
     private ConnectionModel parseConnection(Map<String, String> extras) {
+        ConnectionModel connectionModel = new ConnectionModel();
+
         return null;
     }
 

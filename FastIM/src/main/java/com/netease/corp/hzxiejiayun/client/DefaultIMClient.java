@@ -34,8 +34,9 @@ public class DefaultIMClient implements IMClient {
     public static void main(String[] args) {
         DefaultIMClient client = new DefaultIMClient();
         Scanner in = new Scanner(System.in);
-        client.prepareMetaData();
-        client.loginInstruction(in);
+        client.basicInstruction(in);
+//        client.prepareMetaData();
+//        client.loginInstruction(in);
 
 
     }
@@ -78,7 +79,13 @@ public class DefaultIMClient implements IMClient {
                                 socketChannel.write(send);
                                 new SendThread(socketChannel).start();
                             } catch (IOException e) {
-                                System.out.println("发生了IO异常");
+                                try {
+                                    socketChannel.isConnectionPending();
+                                    socketChannel.finishConnect();
+                                } catch (IOException ie) {
+                                    System.out.println("重连失败");
+                                }
+
                             }
                         }
                     } else if (selectionKey.isReadable()) {
@@ -87,7 +94,6 @@ public class DefaultIMClient implements IMClient {
                             socketChannel.read(receive);
                             System.out.println(new String(receive.array()));
                         } catch (IOException e) {
-                            System.out.println("发生了IO异常");
                         }
                     } else if (selectionKey.isWritable()) {
                         receive.flip();
@@ -96,7 +102,6 @@ public class DefaultIMClient implements IMClient {
                             send = CommonWriter.setObject(requestModel);
                             socketChannel.write(send);
                         } catch (IOException e) {
-                            System.out.println("发生了IO异常");
                         }
                     }
                 }
@@ -112,7 +117,7 @@ public class DefaultIMClient implements IMClient {
     }
 
     @Override
-    public void message(String receiverid, String message) {
+    public void message(String senderid, String receiverid, String message) {
 
     }
 
@@ -126,6 +131,7 @@ public class DefaultIMClient implements IMClient {
         System.out.println("1 ：Login");
         System.out.println("2 ：Friend List");
         System.out.println("3 ：Message Service");
+        System.out.println("0 ：Exit");
         String command = in.next();
         if (command != null) {
             switch (command) {
@@ -134,6 +140,9 @@ public class DefaultIMClient implements IMClient {
                     break;
                 case "2":
                     friendListInstruction(in);
+                    break;
+                case "0":
+                    System.exit(0);
                     break;
                 default:
                     break;
@@ -152,7 +161,6 @@ public class DefaultIMClient implements IMClient {
         String username = in.next();
         System.out.println("||-Please input your password-||");
         String password = in.next();
-        login(username, password);
     }
 
     public void friendListInstruction(Scanner in) {
@@ -161,10 +169,9 @@ public class DefaultIMClient implements IMClient {
         System.out.println("||-------FiendList Menu-------||");
         System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
-        String username = in.next();
         System.out.println("||-Please input your password-||");
         String password = in.next();
-        login(username, password);
+        friend("", password);
     }
 
     public void prepareMetaData() {

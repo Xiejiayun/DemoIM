@@ -13,10 +13,7 @@ import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -71,14 +68,21 @@ public class DefaultIMServer implements IMServer {
     public void listen() {
         while (true) {
             try {
-                selector.select();
-                Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = selectionKeys.iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey selectionKey = iterator.next();
-                    iterator.remove();
-                    handleKey(selectionKey);
+                int n = selector.select();
+                if (n == 0) {
+                    continue;
                 }
+                Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                if (selectionKeys.size() > 0) {
+//                    System.out.println("Incoming events " + selectionKeys.size());
+                }
+                Iterator<SelectionKey> it = selectionKeys.iterator();
+                while (it.hasNext()) {
+                    SelectionKey selectionKey = it.next();
+                    handleKey(selectionKey);
+                    it.remove();
+                }
+                selectionKeys.clear();
             } catch (IOException e) {
                 System.out.println("发生了IO异常");
             }
@@ -110,9 +114,10 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
-            client = (SocketChannel) selectionKey.channel();
-            receive.clear();
             try {
+                client = (SocketChannel) selectionKey.channel();
+                client.configureBlocking(false);
+                receive.clear();
                 client.read(receive);
                 receive.flip();
             } catch (IOException e) {
@@ -121,18 +126,12 @@ public class DefaultIMServer implements IMServer {
             Object obj = CommonReader.getObject(receive);
             RequestModel request = (RequestModel) obj;
             System.out.println(request);
-            handleRequest(request);
-            selectionKey.interestOps(SelectionKey.OP_READ);
-        } else if (selectionKey.isWritable()) {
-            send.flip();
-            client = (SocketChannel) selectionKey.channel();
             try {
-                client.write(send);
-            } catch (IOException e) {
+                client.register(selector, SelectionKey.OP_READ);
+            } catch (ClosedChannelException e) {
                 e.printStackTrace();
             }
-        } else if (selectionKey.isConnectable()) {
-            System.out.println("Connectable");
+//            handleRequest(request);
         }
     }
 
