@@ -1,6 +1,6 @@
 package com.netease.corp.hzxiejiayun.server.processor;
 
-import com.netease.corp.hzxiejiayun.common.model.BaseModel;
+import com.netease.corp.hzxiejiayun.common.model.ConnectionModel;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.protocol.ProtocolParser;
@@ -25,8 +25,10 @@ public class DefaultProcessor implements Processor {
     @Override
     public void service(RequestModel request, ResponseModel response) {
         ProtocolParser protocolParser = new RequestParser();
-        protocolParser.parseHeader(request);
-        protocolParser.parseContent(request);
+        int protocol = request.getProtocolType();
+        if (protocol == 0) {
+            ConnectionModel connectionModel = (ConnectionModel) protocolParser.parse(request);
+        }
 
         ProtocolWrapper protocolWrapper = (ProtocolWrapper) new ResponseWrapper();
 //        response = protocolWrapper.wrap(new BaseModel());

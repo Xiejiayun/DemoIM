@@ -26,7 +26,7 @@ public class SendThread extends Thread {
     @Override
     public void run() {
         RequestModel requestModel = new RequestModel();
-        Map<String, String> extras = new HashMap<String, String>();
+        Map<String, String> extras = new HashMap<>();
         while (true) {
             try {
                 sendBuf.clear();

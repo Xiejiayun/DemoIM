@@ -88,7 +88,7 @@ public class DefaultIMServer implements IMServer {
                 client.configureBlocking(false);
                 client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("接收Socket、设置非阻塞或注册事件失败");
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
@@ -111,10 +111,14 @@ public class DefaultIMServer implements IMServer {
             } catch (ClosedChannelException e) {
                 e.printStackTrace();
             }
-//            handleRequest(request);
+            handleRequest(request);
         }
     }
 
+    /**
+     *
+     * @param request
+     */
     private void handleRequest(RequestModel request) {
         Processor processor = new DefaultProcessor();
         ResponseModel response = processor.createResponse();
