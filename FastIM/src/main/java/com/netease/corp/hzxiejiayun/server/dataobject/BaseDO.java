@@ -5,4 +5,5 @@ package com.netease.corp.hzxiejiayun.server.dataobject;
  */
 public class BaseDO {
     private int id;
+
 }

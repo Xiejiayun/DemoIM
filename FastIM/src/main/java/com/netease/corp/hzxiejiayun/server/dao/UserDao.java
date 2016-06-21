@@ -1,26 +1,29 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
-import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 import com.netease.corp.hzxiejiayun.server.dataobject.UserDO;
+
+import java.util.List;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
  */
 public class UserDao {
 
-    public static void main(String[] args) {
-        UserDao userDao = new UserDao();
-        UserDO userDO = new UserDO();
-        userDO.setUid("jack");
-        userDO.setUname("tom");
-        userDO.setPasswd("12345678");
-        userDao.add(userDO);
-        userDao.update(userDO);
-        String uid = "jack";
-        userDao.delete(uid);
+    public static class UserDaoHandler {
+
+        private static UserDao userDao = new UserDao();
+
+        public static UserDao getUserDao() {
+            return userDao;
+        }
     }
 
-    boolean add(UserDO userDO) {
+    public static void main(String[] args) {
+        UserDao userDao = new UserDao();
+        userDao.query("jack","12345678");
+    }
+
+    public boolean add(UserDO userDO) {
         boolean result = false;
         String uid = userDO.getUid();
         String uname = userDO.getUname();
@@ -31,7 +34,7 @@ public class UserDao {
         return result;
     }
 
-    boolean update(UserDO userDO) {
+    public boolean update(UserDO userDO) {
         boolean result;
         String uid = userDO.getUid();
         String uname = userDO.getUname();
@@ -43,7 +46,7 @@ public class UserDao {
         return result;
     }
 
-    boolean delete(String uid) {
+    public boolean delete(String uid) {
         boolean result = false;
         String sql = "delete from users where uid='" + uid + "'";
         DaoUtil.getConnection();
@@ -51,8 +54,38 @@ public class UserDao {
         return result;
     }
 
-    BaseDO query(String uid) {
+    public UserDO query(String uid) {
+        UserDO user = new UserDO();
+        List<String> result = null;
         String sql = "select * from users where uid='" + uid + "'";
-        return null;
+        DaoUtil.getConnection();
+        result = DaoUtil.doSql(sql);
+        if (result == null)
+            return null;
+        int id = Integer.parseInt(result.get(0));
+        String uname = result.get(2);
+        String password = result.get(3);
+        user.setId(id);
+        user.setUid(uid);
+        user.setUname(uname);
+        user.setPasswd(password);
+        return user;
+    }
+
+    public UserDO query(String uid, String password) {
+        UserDO user = new UserDO();
+        List<String> result = null;
+        String sql = "select * from users where uid='"+uid+"' and passwd='"+password+"'";
+        DaoUtil.getConnection();
+        result = DaoUtil.doSql(sql);
+        if (result == null)
+            return null;
+        Integer id = Integer.parseInt(result.get(0));
+        String uname = result.get(2);
+        user.setId(id);
+        user.setUid(uid);
+        user.setUname(uname);
+        user.setPasswd(password);
+        return user;
     }
 }

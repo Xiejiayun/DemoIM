@@ -3,6 +3,7 @@ package com.netease.corp.hzxiejiayun.client;
 
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
+import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -35,15 +36,13 @@ public class DefaultIMClient implements IMClient {
         DefaultIMClient client = new DefaultIMClient();
         Scanner in = new Scanner(System.in);
         client.basicInstruction(in);
-//        client.prepareMetaData();
-//        client.loginInstruction(in);
-
-
     }
 
     @Override
     public void login(String username, String password) {
         RequestModel requestModel = new RequestModel();
+        requestModel.setProtocolType(1);
+        requestModel.setHost(NetworkUtils.getHost());
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("username", username);
         extras.put("password", password);
@@ -85,7 +84,6 @@ public class DefaultIMClient implements IMClient {
                                 } catch (IOException ie) {
                                     System.out.println("重连失败");
                                 }
-
                             }
                         }
                     } else if (selectionKey.isReadable()) {
@@ -175,13 +173,4 @@ public class DefaultIMClient implements IMClient {
         friend("", password);
     }
 
-    public void prepareMetaData() {
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            String host = inetAddress.getHostAddress();
-            System.out.println("Host address is " + host);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
 }

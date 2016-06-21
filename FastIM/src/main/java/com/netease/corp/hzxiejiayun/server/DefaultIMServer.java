@@ -3,18 +3,18 @@ package com.netease.corp.hzxiejiayun.server;
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
-import com.netease.corp.hzxiejiayun.common.model.UserModel;
 import com.netease.corp.hzxiejiayun.server.processor.DefaultProcessor;
 import com.netease.corp.hzxiejiayun.server.processor.Processor;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
@@ -48,6 +48,7 @@ public class DefaultIMServer implements IMServer {
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            System.out.println("服务端启动，开始监听"+port+"端口");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,16 +63,13 @@ public class DefaultIMServer implements IMServer {
                     continue;
                 }
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                if (selectionKeys.size() > 0) {
-//                    System.out.println("Incoming events " + selectionKeys.size());
-                }
                 Iterator<SelectionKey> it = selectionKeys.iterator();
                 while (it.hasNext()) {
                     SelectionKey selectionKey = it.next();
                     handleKey(selectionKey);
                     it.remove();
                 }
-                selector.selectedKeys().clear();
+//                selector.selectedKeys().clear();
             } catch (IOException e) {
                 System.out.println("发生了IO异常");
             }
@@ -103,15 +101,15 @@ public class DefaultIMServer implements IMServer {
             receive.flip();
             Object obj = CommonReader.getObject(receive);
             RequestModel request = (RequestModel) obj;
+            System.out.println(request);
+            handleRequest(request);
             //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
             cachedSockets.put(request.getSenderid(), client);
-            System.out.println(request);
             try {
                 client.register(selector, SelectionKey.OP_READ);
             } catch (ClosedChannelException e) {
                 e.printStackTrace();
             }
-            handleRequest(request);
         }
     }
 

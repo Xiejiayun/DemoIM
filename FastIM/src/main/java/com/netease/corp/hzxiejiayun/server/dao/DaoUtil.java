@@ -1,6 +1,8 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
 import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
@@ -54,15 +56,29 @@ public class DaoUtil {
      * @param sql SQL语句
      * @return 结果集合
      */
-    public static ResultSet doSql(String sql) {
+    public static List doSql(String sql) {
+        List list = new LinkedList();
         ResultSet resultSet = null;
         Statement stmt = null;
+        int columns = 1;
         try {
             stmt = con.createStatement();
             resultSet = stmt.executeQuery(sql);
+            int column = resultSet.getMetaData().getColumnCount();
+            int index = 1;
+            if (resultSet.next()) {
+                for (int i=1; i<=column; i++) {
+                    list.add(resultSet.getString(i));
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             if (stmt != null) {
                 try {
                     stmt.close();
@@ -70,8 +86,15 @@ public class DaoUtil {
                     e.printStackTrace();
                 }
             }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return resultSet;
+        return list;
     }
 
     /**
