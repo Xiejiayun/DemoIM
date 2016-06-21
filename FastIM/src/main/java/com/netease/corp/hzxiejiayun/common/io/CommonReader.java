@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  * 通用的IO读取器
  */
 public class CommonReader {
-    
+
     /**
      * 从ByteBuffer中读取对应的序列化对象
      *

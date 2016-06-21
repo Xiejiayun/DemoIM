@@ -1,15 +1,12 @@
 package test.com.netease.corp.hzxiejiayun.common.util;
 
-import com.mysql.fabric.Response;
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
-import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.

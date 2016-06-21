@@ -16,7 +16,7 @@ public class ChatDao {
         String receiver = chatDO.getReceiver();
         String message = chatDO.getMessage();
         String status = chatDO.getStatus();
-        String sql = "insert into chat(chattime, sender, receiver, message, status) values ('"+chattime+"','"+sender+"','"+receiver+"','"+message+"', '"+status+"')";
+        String sql = "insert into chat(chattime, sender, receiver, message, status) values ('" + chattime + "','" + sender + "','" + receiver + "','" + message + "', '" + status + "')";
         DaoUtil.getConnection();
         result = DaoUtil.executeSQL(sql);
         return result;

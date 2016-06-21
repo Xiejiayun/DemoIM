@@ -37,7 +37,7 @@ public class LoginService implements Service {
             responseModel.setResponseCode("2");
             responseModel.setResponseContent("failed login");
             responseModel.setExtras(new HashMap<String, String>());
-            System.out.println("Response is "+responseModel);
+            System.out.println("Response is " + responseModel);
             sendBuff = CommonWriter.setObject(responseModel);
             System.out.println("ByteBuffer is " + sendBuff);
             try {
@@ -52,7 +52,7 @@ public class LoginService implements Service {
             response.setResponseCode("1");
             response.setResponseContent("success login");
             response.setExtras(new HashMap<String, String>());
-            System.out.println("Response is "+response);
+            System.out.println("Response is " + response);
             sendBuff = CommonWriter.setObject(response);
             System.out.println("ByteBuffer is " + sendBuff);
             try {

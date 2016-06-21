@@ -10,6 +10,7 @@ public class NetworkUtils {
 
     /**
      * 获取当前主机的IP地址
+     *
      * @return
      */
     public static String getHost() {

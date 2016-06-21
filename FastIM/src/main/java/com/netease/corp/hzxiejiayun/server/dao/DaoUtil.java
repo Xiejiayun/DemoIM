@@ -67,7 +67,7 @@ public class DaoUtil {
             int column = resultSet.getMetaData().getColumnCount();
             int index = 1;
             while (resultSet.next()) {
-                for (int i=1; i<=column; i++) {
+                for (int i = 1; i <= column; i++) {
                     list.add(resultSet.getString(i));
                 }
             }

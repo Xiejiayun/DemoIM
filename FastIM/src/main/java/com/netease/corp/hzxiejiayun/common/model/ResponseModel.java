@@ -10,6 +10,9 @@ import java.util.HashMap;
  */
 public class ResponseModel extends RequestResponseModel implements Serializable {
 
+    private String responseCode;
+    private String responseContent;
+
     public ResponseModel(String responseCode, String responseContent) {
         super();
         this.responseCode = responseCode;
@@ -20,10 +23,6 @@ public class ResponseModel extends RequestResponseModel implements Serializable 
     public ResponseModel() {
         super();
     }
-
-    private String responseCode;
-
-    private String responseContent;
 
     public String getResponseCode() {
         return responseCode;

@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
- *
+ * <p/>
  * 请求包装器，用来对请求进行协议封装
  */
 public class RequestWrapper implements ProtocolWrapper {
@@ -25,21 +25,24 @@ public class RequestWrapper implements ProtocolWrapper {
         requestModel.setTimestamp(baseModel.getTimestamp());
         Map<String, String> extras = new HashMap<>();
         int protoType = requestModel.getProtocolType();
-        switch(protoType) {
-            case 0:break;//connection
+        switch (protoType) {
+            case 0:
+                break;//connection
             case 1:
-                LoginModel loginModel = (LoginModel)baseModel;
+                LoginModel loginModel = (LoginModel) baseModel;
                 extras.put("username", loginModel.getUsername());
                 extras.put("password", loginModel.getPassword());
                 requestModel.setExtras(extras);
                 break;//login
-            case 2:break;//add friend
+            case 2:
+                break;//add friend
             case 3:
                 MessageModel messageModel = (MessageModel) baseModel;
                 extras.put("textMessage", messageModel.getTextMessage());
                 requestModel.setExtras(extras);
                 break;//send message
-            default:break;
+            default:
+                break;
         }
         return requestModel;
     }

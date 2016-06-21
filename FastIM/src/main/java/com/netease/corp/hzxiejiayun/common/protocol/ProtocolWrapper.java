@@ -11,6 +11,7 @@ import com.netease.corp.hzxiejiayun.common.model.RequestResponseModel;
 public interface ProtocolWrapper {
     /**
      * 对基础对象进行包装
+     *
      * @param baseModel 基础对象
      * @return
      */

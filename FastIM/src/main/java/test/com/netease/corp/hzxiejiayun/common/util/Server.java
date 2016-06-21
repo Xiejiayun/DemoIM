@@ -29,10 +29,17 @@ public class Server {
     //在线用户列表
     private Hashtable<String, SocketChannel> userList = null;
 
-    public Server() {}
+    public Server() {
+    }
 
     public Server(int port) {
         this.port = port;
+    }
+
+    public static void main(String args[]) {
+        Server server = new Server();
+        server.init();
+        server.start();
     }
 
     //初始化服务器
@@ -50,7 +57,7 @@ public class Server {
             //将与本通道相关的服务器套接字对象绑定到指定地址和端口
             ssc.socket().bind(isa);
             //创建在线用户列表
-            userList = new Hashtable<String, SocketChannel> ();
+            userList = new Hashtable<String, SocketChannel>();
         } catch (IOException e) {
             System.out.println("初始化服务器时异常，原因  -------->  " + e.getMessage());
         }
@@ -91,14 +98,14 @@ public class Server {
                                 sc.configureBlocking(false);
                                 //将新建的SocketChannel注册到Selector上，准备进行数据"写"操作，
                                 //并将当前用户名以附件的方式附带记录到新建的选择键上。
-                                SelectionKey newKey = sc.register(selector,SelectionKey.OP_WRITE, name);
+                                SelectionKey newKey = sc.register(selector, SelectionKey.OP_WRITE, name);
                                 //将新上线用户信息加入到在线用户列表
                                 userList.put(name, sc);
                                 //发送"新用户上线"通知
                                 transmitMessage(name + " in!", "--Server Info--");
                             }
                             //否则，如果当前键对应的通道已准备好进行"写"操作
-                        }else if (key.isWritable()) {
+                        } else if (key.isWritable()) {
                             //获取当前键对应的可选择通道（SocketChannel）
                             sc = (SocketChannel) key.channel();
                             //接收该通道相应用户的发言信息
@@ -126,7 +133,7 @@ public class Server {
                 //延时循环，降低服务器端处理负荷
                 Thread.sleep(500);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("启动服务器时异常，原因  -------->  " + e.getMessage());
         }
     }
@@ -134,7 +141,7 @@ public class Server {
     //转发用户发言信息
     public void transmitMessage(String msg, String name) {
         try {
-            ByteBuffer buffer = ByteBuffer.wrap( (name + ":" + msg).getBytes("UTF-8"));
+            ByteBuffer buffer = ByteBuffer.wrap((name + ":" + msg).getBytes("UTF-8"));
             //将字节数组包装到缓冲区中
             Collection channels = userList.values();
             SocketChannel sc;
@@ -145,7 +152,7 @@ public class Server {
                 buffer.flip();
                 //将缓冲区ByteBuffer的极限值设置为当前数据实际大小，将缓冲区的值设置为0
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("转发用户发言信息时异常，原因  -------->  " + e.getMessage());
         }
     }
@@ -162,15 +169,9 @@ public class Server {
             CharsetDecoder decoder = charset.newDecoder();
             CharBuffer charBuffer = decoder.decode(buf);
             result = charBuffer.toString();
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("接收用户发言信息时异常，原因  -------->  " + e.getMessage());
         }
         return result;
-    }
-
-    public static void main(String args[]) {
-        Server server = new Server();
-        server.init();
-        server.start();
     }
 }

@@ -9,15 +9,6 @@ import java.util.List;
  */
 public class UserDao {
 
-    public static class UserDaoHandler {
-
-        private static UserDao userDao = new UserDao();
-
-        public static UserDao getUserDao() {
-            return userDao;
-        }
-    }
-
     public static void main(String[] args) {
         UserDao userDao = new UserDao();
         userDao.query("jack", "12345678");
@@ -87,5 +78,14 @@ public class UserDao {
         user.setUname(uname);
         user.setPasswd(password);
         return user;
+    }
+
+    public static class UserDaoHandler {
+
+        private static UserDao userDao = new UserDao();
+
+        public static UserDao getUserDao() {
+            return userDao;
+        }
     }
 }

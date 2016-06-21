@@ -23,45 +23,53 @@ public class Client {
     private TextArea ta;
     private TextField tf;
     private boolean runnable = true;
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         Client cc = new Client();
         cc.createUI();
         cc.inputName();
         cc.connect();
-        new ReceiveThread(cc,cc.getTextArea()).start();
+        new ReceiveThread(cc, cc.getTextArea()).start();
     }
-    public SocketChannel getSc(){
+
+    public SocketChannel getSc() {
         return sc;
     }
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    public TextArea getTextArea(){
+
+    public TextArea getTextArea() {
         return ta;
     }
-    public TextField getTextField(){
+
+    public TextField getTextField() {
         return tf;
     }
-    public boolean getRunnable(){
+
+    public boolean getRunnable() {
         return runnable;
     }
-    public void stop(){
+
+    public void stop() {
         runnable = false;
     }
 
-    public void shutDown(){
-        try{
+    public void shutDown() {
+        try {
             sc.write(ByteBuffer.wrap("bye".getBytes("UTF-8")));
             ta.append("Exit in 5 seconds!");
             this.stop();
             Thread.sleep(5000);
             sc.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.exit(0);
     }
-    public void createUI(){
+
+    public void createUI() {
         f = new Frame("Client");
         ta = new TextArea();
         ta.setEditable(false);
@@ -69,57 +77,61 @@ public class Client {
         Button send = new Button("Send");
         Panel p = new Panel();
         p.setLayout(new BorderLayout());
-        p.add(tf,"Center");
-        p.add(send,"East");
-        f.add(ta,"Center");
-        f.add(p,"South");
+        p.add(tf, "Center");
+        p.add(send, "East");
+        f.add(ta, "Center");
+        f.add(p, "South");
         MyClientListener listener = new MyClientListener(this);
         send.addActionListener((ActionListener) listener);
         tf.addActionListener(listener);
-        f.addWindowListener(new WindowAdapter(){
-            public void windowClosing(WindowEvent e){
+        f.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
                 Client.this.shutDown();
             }
         });
-        f.setSize(400,400);
-        f.setLocation(600,0);
+        f.setSize(400, 400);
+        f.setLocation(600, 0);
         f.setVisible(true);
         tf.requestFocus();
     }
-    public boolean connect(){
-        try{
+
+    public boolean connect() {
+        try {
             sc = SocketChannel.open();
             //"czd"为目标计算机名
-            InetSocketAddress isa = new InetSocketAddress("localhost",6666);
+            InetSocketAddress isa = new InetSocketAddress("localhost", 6666);
             sc.connect(isa);
             sc.configureBlocking(false);
             sc.write(ByteBuffer.wrap(name.getBytes("UTF-8")));
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
-    public void inputName(){
+    public void inputName() {
         String name = javax.swing.JOptionPane.showInputDialog("Input Your Name:");
         this.setName(name);
         f.setTitle(name);
     }
 }
-class MyClientListener implements ActionListener{
+
+class MyClientListener implements ActionListener {
     private Client client;
-    public MyClientListener(Client client){
+
+    public MyClientListener(Client client) {
         this.client = client;
     }
-    public void actionPerformed(ActionEvent e){
+
+    public void actionPerformed(ActionEvent e) {
         TextField tf = client.getTextField();
         String info = tf.getText();
-        if(info.equals("bye")){
+        if (info.equals("bye")) {
             client.shutDown();
-        }else{
-            try{
+        } else {
+            try {
                 client.getSc().write(ByteBuffer.wrap(info.getBytes("UTF-8")));
-            }catch (Exception e1) {
+            } catch (Exception e1) {
                 e1.printStackTrace();
             }
         }
@@ -127,14 +139,17 @@ class MyClientListener implements ActionListener{
         tf.requestFocus();
     }
 }
-class ReceiveThread extends Thread{
+
+class ReceiveThread extends Thread {
     private Client client;
     private TextArea ta;
-    public ReceiveThread(Client client,TextArea ta){
+
+    public ReceiveThread(Client client, TextArea ta) {
         this.client = client;
         this.ta = ta;
     }
-    public void run(){
+
+    public void run() {
         SocketChannel sc = client.getSc();
         ByteBuffer byteBuffer = ByteBuffer.allocate(2048);
         CharBuffer charBuffer = null;
@@ -142,10 +157,10 @@ class ReceiveThread extends Thread{
         CharsetDecoder decoder = charset.newDecoder();
         String msg = null;
         int n = 0;
-        try{
-            while(client.getRunnable()){
+        try {
+            while (client.getRunnable()) {
                 n = sc.read(byteBuffer);
-                if(n>0){
+                if (n > 0) {
                     byteBuffer.flip();
                     charBuffer = decoder.decode(byteBuffer);
                     msg = charBuffer.toString();
@@ -154,7 +169,7 @@ class ReceiveThread extends Thread{
                 byteBuffer.clear();
                 Thread.sleep(500);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
         }

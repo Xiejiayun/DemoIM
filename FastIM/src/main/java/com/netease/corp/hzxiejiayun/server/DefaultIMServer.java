@@ -25,16 +25,11 @@ import java.util.Set;
  */
 public class DefaultIMServer implements IMServer {
 
-    private Map<String, SocketChannel> cachedSockets = new HashMap<>();
     private static int port = 6666;
     Selector selector;
+    private Map<String, SocketChannel> cachedSockets = new HashMap<>();
     private ByteBuffer send = ByteBuffer.allocate(1024);
     private ByteBuffer receive = ByteBuffer.allocate(1024);
-
-    public static void main(String[] args) {
-        DefaultIMServer defaultIMServer = new DefaultIMServer(port);
-        defaultIMServer.listen();
-    }
 
     public DefaultIMServer() {
         init(port);
@@ -42,6 +37,11 @@ public class DefaultIMServer implements IMServer {
 
     public DefaultIMServer(int port) {
         init(port);
+    }
+
+    public static void main(String[] args) {
+        DefaultIMServer defaultIMServer = new DefaultIMServer(port);
+        defaultIMServer.listen();
     }
 
     private void init(int port) {
@@ -52,7 +52,7 @@ public class DefaultIMServer implements IMServer {
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("服务端启动，开始监听"+port+"端口……");
+            System.out.println("服务端启动，开始监听" + port + "端口……");
         } catch (BindException bindException) {
             System.out.println("地址已经在使用……");
             System.exit(0);
@@ -131,12 +131,11 @@ public class DefaultIMServer implements IMServer {
     }
 
     /**
-     *
      * @param request
      */
     private void handleRequest(RequestModel request, SocketChannel socket) {
         Processor processor = new DefaultProcessor();
         ResponseModel response = processor.createResponse();
-        processor.service(request, response,socket);
+        processor.service(request, response, socket);
     }
 }

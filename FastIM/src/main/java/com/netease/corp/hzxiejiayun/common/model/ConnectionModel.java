@@ -5,7 +5,7 @@ package com.netease.corp.hzxiejiayun.common.model;
  * <p/>
  * 第一次和Socket建立连接时候传
  */
-public class ConnectionModel extends BaseModel{
+public class ConnectionModel extends BaseModel {
 
     //主机的IP地址
     private String host;
