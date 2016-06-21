@@ -20,6 +20,8 @@ import java.util.Scanner;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
+ * <p/>
+ * 默认的IM客户端
  */
 public class DefaultIMClient implements IMClient {
 
@@ -28,10 +30,6 @@ public class DefaultIMClient implements IMClient {
     ByteBuffer send = null;
     ByteBuffer receive = ByteBuffer.allocate(1024);
 
-    public DefaultIMClient() {
-    }
-
-
     public static void main(String[] args) {
         DefaultIMClient client = new DefaultIMClient();
         Scanner in = new Scanner(System.in);
@@ -39,7 +37,7 @@ public class DefaultIMClient implements IMClient {
     }
 
     @Override
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         RequestModel requestModel = new RequestModel();
         requestModel.setProtocolType(1);
         requestModel.setHost(NetworkUtils.getHost());
@@ -47,7 +45,6 @@ public class DefaultIMClient implements IMClient {
         extras.put("username", username);
         extras.put("password", password);
         requestModel.setExtras(extras);
-
         try {
             socketChannel = SocketChannel.open();
             selector = Selector.open();
@@ -76,7 +73,6 @@ public class DefaultIMClient implements IMClient {
                                 send = CommonWriter.setObject(requestModel);
                                 System.out.println(send.toString());
                                 socketChannel.write(send);
-                                new SendThread(socketChannel).start();
                             } catch (IOException e) {
                                 try {
                                     socketChannel.isConnectionPending();
@@ -90,21 +86,17 @@ public class DefaultIMClient implements IMClient {
                         try {
                             receive.clear();
                             socketChannel.read(receive);
-                            System.out.println(receive);
                             receive.flip();
-                            System.out.println(receive.asCharBuffer().toString());
                             Object obj = CommonReader.getObject(receive);
                             ResponseModel responseModel = (ResponseModel) obj;
-                            System.out.println("Response Model is" + responseModel);
+                            if (responseModel != null && responseModel.getResponseCode().equals("1")) {
+                                return true;
+                            }
+                            if (responseModel != null && responseModel.getResponseCode().equals("2")) {
+                                return false;
+                            }
                         } catch (IOException e) {
-                        }
-                    } else if (selectionKey.isWritable()) {
-                        receive.flip();
-                        try {
-                            send.flip();
-                            send = CommonWriter.setObject(requestModel);
-                            socketChannel.write(send);
-                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -132,8 +124,6 @@ public class DefaultIMClient implements IMClient {
         System.out.println("||----------------------------||");
         System.out.println("||------Choose operations-----||");
         System.out.println("1 ：Login");
-        System.out.println("2 ：Friend List");
-        System.out.println("3 ：Message Service");
         System.out.println("0 ：Exit");
         String command = in.next();
         if (command != null) {
@@ -141,16 +131,12 @@ public class DefaultIMClient implements IMClient {
                 case "1":
                     loginInstruction(in);
                     break;
-                case "2":
-                    friendListInstruction(in);
-                    break;
                 case "0":
                     System.exit(0);
                     break;
                 default:
                     break;
             }
-
         }
     }
 
@@ -164,10 +150,41 @@ public class DefaultIMClient implements IMClient {
         String username = in.next();
         System.out.println("||-Please input your password-||");
         String password = in.next();
-        login(username, password);
-        loginInstruction(in);
+        boolean userLogin = login(username, password);
+        if (userLogin) {
+            mainMenuInstruction(in);
+        } else {
+            System.out.println("||--------Login failed--------||");
+            loginInstruction(in);
+        }
     }
 
+    public void mainMenuInstruction(Scanner in) {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||--------Main Menu-----------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||-Please choose your command-||");
+        System.out.println("1 ：Chat");
+        System.out.println("2 ：Add Friend");
+        System.out.println("3 ：Logout");
+        System.out.println("0 ：Exit");
+        String command = in.next();
+        if (command.equals("1")) {
+            //聊天
+        } else if (command.equals("2")) {
+            //添加好友
+        } else if (command.equals("3")) {
+            //退出登录
+        } else if (command.equals("0")) {
+
+        } else {
+            System.out.println("输入错误，请重新选择");
+            mainMenuInstruction(in);
+        }
+        loginInstruction(in);
+    }
 
     public void friendListInstruction(Scanner in) {
         System.out.println("||----------------------------||");
@@ -179,5 +196,4 @@ public class DefaultIMClient implements IMClient {
         String password = in.next();
         friend("", password);
     }
-
 }

@@ -11,4 +11,5 @@ import java.nio.channels.SocketChannel;
 public interface Service {
 
     void service(RequestModel request, ResponseModel response, SocketChannel socketChannel);
+
 }

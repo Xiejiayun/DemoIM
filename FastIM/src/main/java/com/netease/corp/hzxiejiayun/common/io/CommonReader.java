@@ -29,9 +29,9 @@ public class CommonReader {
             byteBuffer.clear();
             return obj;
         } catch (IOException e) {
-            System.out.println("发生错误"+ e.toString());
+//            System.out.println("发生错误"+ e.toString());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return obj;
     }

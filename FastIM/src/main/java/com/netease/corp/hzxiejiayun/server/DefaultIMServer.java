@@ -7,6 +7,7 @@ import com.netease.corp.hzxiejiayun.server.processor.DefaultProcessor;
 import com.netease.corp.hzxiejiayun.server.processor.Processor;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
@@ -52,6 +53,9 @@ public class DefaultIMServer implements IMServer {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             System.out.println("服务端启动，开始监听"+port+"端口……");
+        } catch (BindException bindException) {
+            System.out.println("地址已经在使用……");
+            System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,7 +103,7 @@ public class DefaultIMServer implements IMServer {
                 while (client.read(receive) > 0) {
                     System.out.println(receive);
                     receive.flip();
-                    System.out.println(receive);
+                    System.out.println(receive.asCharBuffer().toString());
                 }
                 Object obj = CommonReader.getObject(receive);
                 RequestModel request = (RequestModel) obj;

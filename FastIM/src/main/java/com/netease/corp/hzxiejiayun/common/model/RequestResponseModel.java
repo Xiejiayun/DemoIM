@@ -82,7 +82,7 @@ public class RequestResponseModel implements Serializable {
 
     @Override
     public String toString() {
-        return "RequestModel{" +
+        return "RequestResponseModel{" +
                 "protocolType=" + protocolType +
                 ", host='" + host + '\'' +
                 ", senderid='" + senderid + '\'' +

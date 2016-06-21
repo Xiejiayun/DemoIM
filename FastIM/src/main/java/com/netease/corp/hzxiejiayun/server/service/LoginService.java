@@ -31,9 +31,24 @@ public class LoginService implements Service {
         ByteBuffer sendBuff = null;
         if (userDO == null) {
             System.out.println("用户名和密码错误！");
+            ResponseModel responseModel = new ResponseModel();
+            responseModel.setHost(NetworkUtils.getHost());
+            responseModel.setProtocolType(4);//响应登录
+            responseModel.setResponseCode("2");
+            responseModel.setResponseContent("failed login");
+            responseModel.setExtras(new HashMap<String, String>());
+            System.out.println("Response is "+responseModel);
+            sendBuff = CommonWriter.setObject(responseModel);
+            System.out.println("ByteBuffer is " + sendBuff);
+            try {
+                socketChannel.write(sendBuff);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             System.out.println("登录成功！");
             response.setHost(NetworkUtils.getHost());
+            response.setProtocolType(4);
             response.setResponseCode("1");
             response.setResponseContent("success login");
             response.setExtras(new HashMap<String, String>());
@@ -47,6 +62,4 @@ public class LoginService implements Service {
             }
         }
     }
-
-
 }

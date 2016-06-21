@@ -78,7 +78,7 @@ public class UserDao {
         String sql = "select * from users where uid='" + uid + "' and passwd='" + password + "'";
         DaoUtil.getConnection();
         result = DaoUtil.doSql(sql);
-        if (result == null || result.get(0) == null)
+        if (result == null || result.size() == 0 || result.get(0) == null)
             return null;
         Integer id = Integer.parseInt(result.get(0));
         String uname = result.get(2);

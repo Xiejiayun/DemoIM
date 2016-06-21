@@ -13,7 +13,7 @@ public interface IMClient {
      * @param uid       用户id
      * @param pwd       用户密码
      */
-    void login(String uid, String pwd);
+    boolean login(String uid, String pwd);
 
     /**
      * 添加好友的操作

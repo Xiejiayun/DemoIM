@@ -1,6 +1,7 @@
 package com.netease.corp.hzxiejiayun.common.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
@@ -8,6 +9,17 @@ import java.io.Serializable;
  * 响应模型，包括响应码和响应内容
  */
 public class ResponseModel extends RequestResponseModel implements Serializable {
+
+    public ResponseModel(String responseCode, String responseContent) {
+        super();
+        this.responseCode = responseCode;
+        this.responseContent = responseContent;
+        this.setExtras(new HashMap<String, String>());
+    }
+
+    public ResponseModel() {
+        super();
+    }
 
     private String responseCode;
 
@@ -27,5 +39,13 @@ public class ResponseModel extends RequestResponseModel implements Serializable 
 
     public void setResponseContent(String responseContent) {
         this.responseContent = responseContent;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseModel{" +
+                "responseCode='" + responseCode + '\'' +
+                ", responseContent='" + responseContent + '\'' +
+                '}';
     }
 }
