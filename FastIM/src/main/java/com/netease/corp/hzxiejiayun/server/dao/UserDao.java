@@ -20,7 +20,7 @@ public class UserDao {
 
     public static void main(String[] args) {
         UserDao userDao = new UserDao();
-        userDao.query("jack","12345678");
+        userDao.query("jack", "12345678");
     }
 
     public boolean add(UserDO userDO) {
@@ -75,10 +75,10 @@ public class UserDao {
     public UserDO query(String uid, String password) {
         UserDO user = new UserDO();
         List<String> result = null;
-        String sql = "select * from users where uid='"+uid+"' and passwd='"+password+"'";
+        String sql = "select * from users where uid='" + uid + "' and passwd='" + password + "'";
         DaoUtil.getConnection();
         result = DaoUtil.doSql(sql);
-        if (result == null)
+        if (result == null || result.get(0) == null)
             return null;
         Integer id = Integer.parseInt(result.get(0));
         String uname = result.get(2);

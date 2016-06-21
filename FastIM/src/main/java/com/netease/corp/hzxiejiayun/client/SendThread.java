@@ -13,16 +13,14 @@ import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
- * <p/>
- * 发送消息的线程
  */
 public class SendThread extends Thread {
     ByteBuffer sendBuf = ByteBuffer.allocate(1024);
     String sendText = null;
-    SocketChannel socketChannel;
+    SocketChannel client;
 
     public SendThread(SocketChannel socketChannel) {
-        this.socketChannel = socketChannel;
+        client = socketChannel;
     }
 
     @Override
@@ -35,13 +33,15 @@ public class SendThread extends Thread {
                 InputStreamReader input = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader(input);
                 sendText = br.readLine();
+                if (sendText.equals("q!"))
+                    break;
                 extras.put("message", sendText);
                 requestModel.setExtras(extras);
                 sendBuf = CommonWriter.setObject(requestModel);
+                System.out.println(requestModel);
                 sendBuf.flip();
-                socketChannel.write(sendBuf);
-                System.out.println(sendBuf);
-                System.out.println(socketChannel);
+                System.out.println();
+                client.write(sendBuf);
             } catch (IOException e) {
                 e.printStackTrace();
                 break;

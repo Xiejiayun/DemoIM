@@ -1,8 +1,10 @@
 package com.netease.corp.hzxiejiayun.client;
 
 
+import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
+import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
 import java.io.IOException;
@@ -90,7 +92,12 @@ public class DefaultIMClient implements IMClient {
                         try {
                             receive.clear();
                             socketChannel.read(receive);
-                            System.out.println(new String(receive.array()));
+                            System.out.println(receive);
+                            receive.flip();
+                            System.out.println(receive.asCharBuffer().toString());
+                            Object obj = CommonReader.getObject(receive);
+                            ResponseModel responseModel = (ResponseModel) obj;
+                            System.out.println("Response Model is" + responseModel);
                         } catch (IOException e) {
                         }
                     } else if (selectionKey.isWritable()) {
@@ -160,7 +167,9 @@ public class DefaultIMClient implements IMClient {
         System.out.println("||-Please input your password-||");
         String password = in.next();
         login(username, password);
+        loginInstruction(in);
     }
+
 
     public void friendListInstruction(Scanner in) {
         System.out.println("||----------------------------||");

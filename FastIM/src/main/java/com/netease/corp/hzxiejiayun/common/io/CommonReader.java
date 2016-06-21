@@ -29,7 +29,7 @@ public class CommonReader {
             byteBuffer.clear();
             return obj;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("发生错误"+ e.toString());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

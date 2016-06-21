@@ -17,6 +17,7 @@ public class MessageModel extends BaseModel {
     private byte[] videoMessage;
 
     public MessageModel(String textMessage) {
+        super();
         this.textMessage = textMessage;
     }
 

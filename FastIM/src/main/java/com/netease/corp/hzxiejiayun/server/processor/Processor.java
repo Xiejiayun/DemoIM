@@ -3,6 +3,8 @@ package com.netease.corp.hzxiejiayun.server.processor;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 
+import java.nio.channels.SocketChannel;
+
 /**
  * Created by hzxiejiayun on 2016/6/17.
  */
@@ -12,6 +14,6 @@ public interface Processor {
 
     ResponseModel createResponse();
 
-    void service(RequestModel request, ResponseModel response);
+    void service(RequestModel request, ResponseModel response, SocketChannel socketChannel);
 
 }

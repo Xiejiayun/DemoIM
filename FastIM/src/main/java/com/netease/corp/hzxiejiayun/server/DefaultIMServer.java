@@ -48,7 +48,7 @@ public class DefaultIMServer implements IMServer {
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("服务端启动，开始监听"+port+"端口");
+            System.out.println("服务端启动，开始监听"+port+"端口……");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,10 +66,9 @@ public class DefaultIMServer implements IMServer {
                 Iterator<SelectionKey> it = selectionKeys.iterator();
                 while (it.hasNext()) {
                     SelectionKey selectionKey = it.next();
-                    handleKey(selectionKey);
                     it.remove();
+                    handleKey(selectionKey);
                 }
-//                selector.selectedKeys().clear();
             } catch (IOException e) {
                 System.out.println("发生了IO异常");
             }
@@ -90,24 +89,35 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
+            System.out.println("服务端读取数据……");
             client = (SocketChannel) selectionKey.channel();
             receive.clear();
             try {
-                client.read(receive);
+                while (client.read(receive) > 0) {
+                    System.out.println(receive);
+                    receive.flip();
+                    System.out.println(receive);
+                }
+                Object obj = CommonReader.getObject(receive);
+                RequestModel request = (RequestModel) obj;
+                System.out.println(request);
+                handleRequest(request, client);
+                //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
+                cachedSockets.put(request.getSenderid(), client);
+                selectionKey.interestOps(SelectionKey.OP_READ);
+                client.register(selector, SelectionKey.OP_WRITE);
             } catch (IOException e) {
                 System.out.println("读取客户端发送数据失败，终止失败操作");
                 return;
             }
-            receive.flip();
-            Object obj = CommonReader.getObject(receive);
-            RequestModel request = (RequestModel) obj;
-            System.out.println(request);
-            handleRequest(request);
-            //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
-            cachedSockets.put(request.getSenderid(), client);
+
+        } else if (selectionKey.isWritable()) {
+            client = (SocketChannel) selectionKey.channel();
+            send.clear();
             try {
-                client.register(selector, SelectionKey.OP_READ);
-            } catch (ClosedChannelException e) {
+                client.write(send);
+                selectionKey.interestOps(SelectionKey.OP_READ);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -117,9 +127,9 @@ public class DefaultIMServer implements IMServer {
      *
      * @param request
      */
-    private void handleRequest(RequestModel request) {
+    private void handleRequest(RequestModel request, SocketChannel socket) {
         Processor processor = new DefaultProcessor();
         ResponseModel response = processor.createResponse();
-        processor.service(request, response);
+        processor.service(request, response,socket);
     }
 }
