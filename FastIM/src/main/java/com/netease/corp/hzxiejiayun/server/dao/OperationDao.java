@@ -1,13 +1,12 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
-import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 import com.netease.corp.hzxiejiayun.server.dataobject.OperationDO;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
 public class OperationDao {
-    boolean add(BaseDO baseDO) {
+    boolean add(OperationDO baseDO) {
         boolean result = false;
         String sql = "add ";
         DaoUtil.getConnection();
@@ -15,7 +14,7 @@ public class OperationDao {
         return result;
     }
 
-    boolean update(BaseDO baseDO) {
+    boolean update(OperationDO baseDO) {
         boolean result = false;
         String sql = "update ";
         DaoUtil.getConnection();

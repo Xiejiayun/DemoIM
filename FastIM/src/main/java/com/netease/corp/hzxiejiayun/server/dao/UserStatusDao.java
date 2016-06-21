@@ -1,6 +1,5 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
-import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 import com.netease.corp.hzxiejiayun.server.dataobject.UserStatusDO;
 
 /**
@@ -8,7 +7,7 @@ import com.netease.corp.hzxiejiayun.server.dataobject.UserStatusDO;
  */
 public class UserStatusDao {
 
-    boolean add(BaseDO baseDO) {
+    boolean add(UserStatusDO baseDO) {
         boolean result = false;
         String sql = "add ";
         DaoUtil.getConnection();
@@ -16,7 +15,7 @@ public class UserStatusDao {
         return result;
     }
 
-    boolean update(BaseDO baseDO) {
+    boolean update(UserStatusDO baseDO) {
         boolean result = false;
         String sql = "update ";
         DaoUtil.getConnection();

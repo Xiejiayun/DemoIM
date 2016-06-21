@@ -1,7 +1,6 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
-import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 import com.netease.corp.hzxiejiayun.server.dataobject.ChatDO;
 
 /**
@@ -40,7 +39,7 @@ public class ChatDao {
         return result;
     }
 
-    BaseDO query(int id) {
+    ChatDO query(int id) {
         return null;
     }
 }

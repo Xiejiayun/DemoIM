@@ -1,6 +1,5 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
-import com.netease.corp.hzxiejiayun.server.dataobject.BaseDO;
 import com.netease.corp.hzxiejiayun.server.dataobject.RelationDO;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class RelationDao {
     }
 
     //这边不提供支持这种更新
-    boolean update(BaseDO baseDO) {
+    boolean update(RelationDO baseDO) {
         return false;
     }
 
