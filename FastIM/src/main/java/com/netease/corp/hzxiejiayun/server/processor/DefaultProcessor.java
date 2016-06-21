@@ -1,10 +1,7 @@
 package com.netease.corp.hzxiejiayun.server.processor;
 
-import com.netease.corp.hzxiejiayun.common.model.*;
-import com.netease.corp.hzxiejiayun.common.protocol.ProtocolParser;
-import com.netease.corp.hzxiejiayun.common.protocol.ProtocolWrapper;
-import com.netease.corp.hzxiejiayun.common.protocol.RequestParser;
-import com.netease.corp.hzxiejiayun.common.protocol.ResponseWrapper;
+import com.netease.corp.hzxiejiayun.common.model.RequestModel;
+import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.server.service.LoginService;
 
 import java.nio.channels.SocketChannel;

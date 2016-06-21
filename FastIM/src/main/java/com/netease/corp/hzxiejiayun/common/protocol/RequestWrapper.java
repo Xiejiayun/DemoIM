@@ -6,8 +6,6 @@ import com.netease.corp.hzxiejiayun.common.model.MessageModel;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 

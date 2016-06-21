@@ -1,10 +1,7 @@
 package com.netease.corp.hzxiejiayun.common.protocol;
 
-import com.mysql.jdbc.log.Log;
 import com.netease.corp.hzxiejiayun.common.model.*;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
-import com.sun.javafx.embed.HostInterface;
-import com.sun.media.jfxmediaimpl.HostUtils;
 
 import java.util.Map;
 
