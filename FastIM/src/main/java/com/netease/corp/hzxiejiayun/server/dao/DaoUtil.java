@@ -66,7 +66,7 @@ public class DaoUtil {
             resultSet = stmt.executeQuery(sql);
             int column = resultSet.getMetaData().getColumnCount();
             int index = 1;
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 for (int i=1; i<=column; i++) {
                     list.add(resultSet.getString(i));
                 }
