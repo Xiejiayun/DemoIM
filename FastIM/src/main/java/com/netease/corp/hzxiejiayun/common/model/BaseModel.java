@@ -6,6 +6,8 @@ package com.netease.corp.hzxiejiayun.common.model;
  * 基础对象模型，主要存储的内容就是传输的元信息
  */
 public class BaseModel {
+    //协议的类型
+    private int protocolType;//0:connection 1:login 2:add friend 3:send message
     //消息id,每个客户端从1开始递增
     private int messageid;
     //发送者的用户id
@@ -18,14 +20,10 @@ public class BaseModel {
     private String status;
     //发送消息的时间戳
     private String timestamp;
-
-    public BaseModel(int messageid, String senderid, String receiverid, String message, String status) {
-        this.messageid = messageid;
-        this.senderid = senderid;
-        this.receiverid = receiverid;
-        this.message = message;
-        this.status = status;
-    }
+    //响应码
+    private String responseCode;
+    //响应内容
+    private String responseContent;
 
     public BaseModel() {
     }
@@ -76,5 +74,29 @@ public class BaseModel {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public int getProtocolType() {
+        return protocolType;
+    }
+
+    public void setProtocolType(int protocolType) {
+        this.protocolType = protocolType;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
+    }
+
+    public String getResponseContent() {
+        return responseContent;
+    }
+
+    public void setResponseContent(String responseContent) {
+        this.responseContent = responseContent;
     }
 }

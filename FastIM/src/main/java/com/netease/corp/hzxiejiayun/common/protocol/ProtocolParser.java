@@ -1,5 +1,6 @@
 package com.netease.corp.hzxiejiayun.common.protocol;
 
+import com.netease.corp.hzxiejiayun.common.model.BaseModel;
 import com.netease.corp.hzxiejiayun.common.model.RequestResponseModel;
 
 /**
@@ -10,17 +11,10 @@ import com.netease.corp.hzxiejiayun.common.model.RequestResponseModel;
 public interface ProtocolParser {
 
     /**
-     * 对传输的对象进行对象头解析
+     * 将请求响应对象解析成BaseMode对象
      *
      * @param model 对象模型
+     * @return BaseModel
      */
-    void parseHeader(RequestResponseModel model);
-
-    /**
-     * 对传输的对象进行对象内容解析
-     *
-     * @param model 对象模型
-     */
-    void parseContent(RequestResponseModel model);
-
+    BaseModel parse(RequestResponseModel model);
 }

@@ -161,6 +161,7 @@ public class DefaultIMClient implements IMClient {
         String username = in.next();
         System.out.println("||-Please input your password-||");
         String password = in.next();
+        login(username, password);
     }
 
     public void friendListInstruction(Scanner in) {

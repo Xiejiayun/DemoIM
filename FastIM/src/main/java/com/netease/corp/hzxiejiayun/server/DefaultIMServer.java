@@ -14,15 +14,14 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
  */
 public class DefaultIMServer implements IMServer {
 
+    private Map<String, SocketChannel> cachedSockets = new HashMap<>();
     private static int port = 6666;
     Selector selector;
     private ByteBuffer send = ByteBuffer.allocate(1024);
@@ -55,16 +54,6 @@ public class DefaultIMServer implements IMServer {
     }
 
     @Override
-    public List<UserModel> getAllFriendsList(String uid) {
-        return null;
-    }
-
-    @Override
-    public void forwardMessage() {
-
-    }
-
-    @Override
     public void listen() {
         while (true) {
             try {
@@ -82,21 +71,11 @@ public class DefaultIMServer implements IMServer {
                     handleKey(selectionKey);
                     it.remove();
                 }
-                selectionKeys.clear();
+                selector.selectedKeys().clear();
             } catch (IOException e) {
                 System.out.println("发生了IO异常");
             }
         }
-    }
-
-    @Override
-    public void userLoginAuthorize() {
-
-    }
-
-    @Override
-    public void friendRequest() {
-
     }
 
     private void handleKey(SelectionKey selectionKey) {
@@ -113,17 +92,19 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
+            client = (SocketChannel) selectionKey.channel();
+            receive.clear();
             try {
-                client = (SocketChannel) selectionKey.channel();
-                client.configureBlocking(false);
-                receive.clear();
                 client.read(receive);
-                receive.flip();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("读取客户端发送数据失败，终止失败操作");
+                return;
             }
+            receive.flip();
             Object obj = CommonReader.getObject(receive);
             RequestModel request = (RequestModel) obj;
+            //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
+            cachedSockets.put(request.getSenderid(), client);
             System.out.println(request);
             try {
                 client.register(selector, SelectionKey.OP_READ);

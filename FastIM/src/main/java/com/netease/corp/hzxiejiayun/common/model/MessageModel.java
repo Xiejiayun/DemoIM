@@ -16,13 +16,11 @@ public class MessageModel extends BaseModel {
     //视频信息
     private byte[] videoMessage;
 
-    public MessageModel(int messageid, String senderid, String receiverid, String message, String status, String textMessage) {
-        super(messageid, senderid, receiverid, message, status);
+    public MessageModel(String textMessage) {
         this.textMessage = textMessage;
     }
 
-    public MessageModel(String textMessage) {
-        this.textMessage = textMessage;
+    public MessageModel() {
     }
 
     public String getTextMessage() {

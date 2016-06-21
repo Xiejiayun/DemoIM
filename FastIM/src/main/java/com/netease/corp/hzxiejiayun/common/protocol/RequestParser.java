@@ -1,9 +1,10 @@
 package com.netease.corp.hzxiejiayun.common.protocol;
 
-import com.netease.corp.hzxiejiayun.common.model.ConnectionModel;
-import com.netease.corp.hzxiejiayun.common.model.LoginModel;
-import com.netease.corp.hzxiejiayun.common.model.MessageModel;
-import com.netease.corp.hzxiejiayun.common.model.RequestResponseModel;
+import com.mysql.jdbc.log.Log;
+import com.netease.corp.hzxiejiayun.common.model.*;
+import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
+import com.sun.javafx.embed.HostInterface;
+import com.sun.media.jfxmediaimpl.HostUtils;
 
 import java.util.Map;
 
@@ -14,75 +15,47 @@ import java.util.Map;
  */
 public class RequestParser implements ProtocolParser {
 
+    /**
+     * 将请求响应对象解析成BaseMode对象
+     *
+     * @param model 对象模型
+     * @return BaseModel
+     */
     @Override
-    public void parseHeader(RequestResponseModel model) {
+    public BaseModel parse(RequestResponseModel model) {
         //协议的类型
         int protocolType = model.getProtocolType();//0:connection 1:login 2:add friend 3:send message
-        //主机的IP地址
-        String host = model.getHost();
-        //发送者的用户id
-        String senderid = model.getSenderid();
-        //接收者的用户id，如果接收者为服务器，则这项为空
-        String receiverid = model.getReceiverid();
-        //时间戳
-        String timestamp = model.getTimestamp();
-        //用户的登录状态
-        int userStatus = model.getUserStatus();
-    }
-
-    @Override
-    public void parseContent(RequestResponseModel model) {
-        //协议的类型
-        int protocolType = model.getProtocolType();//0:connection 1:login 2:add friend 3:send message
-
-        switch (protocolType) {
-            case 0:
-                parseConnection(model.getExtras());
-                break;//处理连接的情况
-            case 1:
-                parseLogin(model.getExtras());
-                break;//处理登录的情况
-            case 2:
-                parseFriend(model.getExtras());
-                break;//处理添加好友的情况
-            case 3:
-                parseMessage(model.getExtras());
-                break;//处理发送消息的情况
-            default:
-                break;//
+        Map<String, String> extras = model.getExtras();
+        if (protocolType == 0) {
+            ConnectionModel connectionModel = new ConnectionModel();
+            connectionModel.setProtocolType(model.getProtocolType());
+            connectionModel.setSenderid(model.getSenderid());
+            connectionModel.setReceiverid(model.getReceiverid());
+            connectionModel.setTimestamp(model.getTimestamp());
+            connectionModel.setHost(NetworkUtils.getHost());
+            return connectionModel;
+        } else if (protocolType == 1) {
+            LoginModel loginModel = new LoginModel();
+            loginModel.setProtocolType(model.getProtocolType());
+            loginModel.setSenderid(model.getSenderid());
+            loginModel.setReceiverid(model.getReceiverid());
+            loginModel.setTimestamp(model.getTimestamp());
+            loginModel.setUsername(extras.get("username"));
+            loginModel.setPassword(extras.get("password"));
+            return loginModel;
+        } else if (protocolType == 2) {
+            MessageModel messageModel = new MessageModel();
+            return messageModel;
+        } else if (protocolType == 3) {
+            MessageModel messageModel = new MessageModel();
+            messageModel.setProtocolType(model.getProtocolType());
+            messageModel.setSenderid(model.getSenderid());
+            messageModel.setReceiverid(model.getReceiverid());
+            messageModel.setTimestamp(model.getTimestamp());
+            messageModel.setTextMessage(extras.get("textMessage"));
+            return messageModel;
         }
-
+        return new BaseModel();
     }
 
-    /**
-     * 解析连接时候的连接模型
-     * @param extras 每次请求中所附带的信息
-     * @return ConnectionModel
-     */
-    private ConnectionModel parseConnection(Map<String, String> extras) {
-        ConnectionModel connectionModel = new ConnectionModel();
-
-        return null;
-    }
-
-    /**
-     * 解析登录时候的登录模型
-     * @param extras 每次请求中所附带的信息
-     * @return LoginModel
-     */
-    private LoginModel parseLogin(Map<String, String> extras) {
-        return null;
-    }
-
-    private void parseFriend(Map<String, String> extras) {
-    }
-
-    /**
-     * 解析聊天时候的消息模型
-     * @param extras 每次请求中所附带的信息
-     * @return MessageModel
-     */
-    private MessageModel parseMessage(Map<String, String> extras) {
-        return null;
-    }
 }
