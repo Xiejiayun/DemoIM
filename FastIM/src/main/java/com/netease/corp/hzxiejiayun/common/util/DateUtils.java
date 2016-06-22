@@ -2,7 +2,6 @@ package com.netease.corp.hzxiejiayun.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
 
 /**
  * Created by hzxiejiayun on 2016/6/21.

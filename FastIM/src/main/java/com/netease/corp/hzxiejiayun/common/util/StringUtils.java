@@ -5,6 +5,19 @@ package com.netease.corp.hzxiejiayun.common.util;
  */
 public class StringUtils {
 
+    public static boolean equals(String a, String b) {
+        if (a == null && b == null) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.equals(b)) {
+            return true;
+        }
+        return false;
+    }
+
     public static String trim(String str) {
         if (str == null) {
             return null;
