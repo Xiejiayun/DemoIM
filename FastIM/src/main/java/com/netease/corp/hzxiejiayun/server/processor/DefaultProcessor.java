@@ -33,12 +33,12 @@ public class DefaultProcessor implements Processor {
         int protocol = request.getProtocolType();
         if (protocol == 0) {
 
-        } else if (protocol == 1) {
+        } else if (protocol == 1) {//登录
             LoginService loginService = new LoginService();
             loginService.service(request, response, socketChannel);
         } else if (protocol == 2) {
 
-        } else if (protocol == 3) {
+        } else if (protocol == 3) {//发送消息
 
         }
         return;

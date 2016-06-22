@@ -101,9 +101,7 @@ public class DefaultIMServer implements IMServer {
             receive.clear();
             try {
                 while (client.read(receive) > 0) {
-                    System.out.println(receive);
                     receive.flip();
-                    System.out.println(receive.asCharBuffer().toString());
                 }
                 Object obj = CommonReader.getObject(receive);
                 RequestModel request = (RequestModel) obj;
@@ -113,8 +111,8 @@ public class DefaultIMServer implements IMServer {
                 //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
                 cachedSockets.put(request.getSenderid(), client);
                 selectionKey.interestOps(SelectionKey.OP_READ);
-                client.register(selector, SelectionKey.OP_WRITE);
             } catch (IOException e) {
+                //这个步骤需要将对应的selectionKey移除
                 selectionKey.cancel();
                 System.out.println("读取客户端数据失败，关闭对应的连接");
                 return;

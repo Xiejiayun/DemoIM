@@ -140,6 +140,7 @@ public class DefaultIMClient implements IMClient {
                         if (socketChannel.isConnectionPending()) {
                             socketChannel.finishConnect();
                             selectionKey.interestOps(SelectionKey.OP_WRITE);
+                            new SendThread(socketChannel).start();
                         }
                     } else if (selectionKey.isReadable()) {
                         try {
@@ -150,14 +151,15 @@ public class DefaultIMClient implements IMClient {
                             ResponseModel responseModel = (ResponseModel) obj;
                             if (responseModel == null)
                                 continue;
-                            if (responseModel.getResponseCode().equals("1")) {
-                                selectionKey.interestOps(SelectionKey.OP_READ);
-                            }
-                            if (responseModel.getResponseCode().equals("2")) {
-                                selectionKey.interestOps(SelectionKey.OP_WRITE);
-                            }
+                            String chattime = responseModel.getTimestamp();
+                            String sender = responseModel.getSenderid();
+                            String receiver = responseModel.getReceiverid();
+                            String msg = responseModel.getExtras().get("textMessage");
+                            System.out.println(chattime + " Sender: " + sender + " Receiver: "+receiver);
+                            System.out.println(msg);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            selectionKey.cancel();
+                            System.out.println("客户端读取数据失败，关闭对应通道");
                         }
                     } else if (selectionKey.isWritable()) {
                         sendRequest(requestModel);
@@ -170,6 +172,11 @@ public class DefaultIMClient implements IMClient {
         }
     }
 
+    /**
+     * 发送对应的请求
+     * @param requestModel
+     * @throws IOException
+     */
     private void sendRequest(RequestModel requestModel) throws IOException {
         try {
             send = CommonWriter.setObject(requestModel);
@@ -184,6 +191,10 @@ public class DefaultIMClient implements IMClient {
         }
     }
 
+    /**
+     * 最基础的信息提示
+     * @param in
+     */
     public void basicInstruction(Scanner in) {
         System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
@@ -208,6 +219,10 @@ public class DefaultIMClient implements IMClient {
         }
     }
 
+    /**
+     * 登录的信息提示
+     * @param in
+     */
     public void loginInstruction(Scanner in) {
         System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
@@ -226,20 +241,6 @@ public class DefaultIMClient implements IMClient {
             System.out.println("||--------Login failed--------||");
             loginInstruction(in);
         }
-    }
-
-    public void chatInstruction(Scanner in) {
-        System.out.println("||----------------------------||");
-        System.out.println("||----------------------------||");
-        System.out.println("||--------Chat Menu-----------||");
-        System.out.println("||----------------------------||");
-        System.out.println("||----------------------------||");
-        System.out.println("||--Please input the receiver-||");
-        String receiver = in.next();
-        System.out.println("||--Please input the message--||");
-        String message = in.next();
-        message(uid, receiver, message);
-
     }
 
     public void mainMenuInstruction(Scanner in) {
@@ -268,6 +269,20 @@ public class DefaultIMClient implements IMClient {
             mainMenuInstruction(in);
         }
         loginInstruction(in);
+    }
+
+    public void chatInstruction(Scanner in) {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||--------Chat Menu-----------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||--Please input the receiver-||");
+        String receiver = in.next();
+        System.out.println("||--Please input the message--||");
+        String message = in.next();
+        message(uid, receiver, message);
+
     }
 
     public void friendListInstruction(Scanner in) {

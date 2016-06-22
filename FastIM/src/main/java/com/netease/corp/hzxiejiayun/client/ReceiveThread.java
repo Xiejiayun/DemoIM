@@ -13,13 +13,15 @@ import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
+ * <p/>
+ * 用来接收外部的请求
  */
-public class SendThread extends Thread {
+public class ReceiveThread extends Thread {
     ByteBuffer sendBuf = ByteBuffer.allocate(1024);
     String sendText = null;
     SocketChannel client;
 
-    public SendThread(SocketChannel socketChannel) {
+    public ReceiveThread(SocketChannel socketChannel) {
         client = socketChannel;
     }
 
@@ -29,7 +31,6 @@ public class SendThread extends Thread {
         Map<String, String> extras = new HashMap<>();
         while (true) {
             try {
-                System.out.println("||--Please input the message--||");
                 sendBuf.clear();
                 InputStreamReader input = new InputStreamReader(System.in);
                 BufferedReader br = new BufferedReader(input);
