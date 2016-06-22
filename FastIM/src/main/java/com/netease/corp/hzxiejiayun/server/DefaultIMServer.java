@@ -107,14 +107,16 @@ public class DefaultIMServer implements IMServer {
                 }
                 Object obj = CommonReader.getObject(receive);
                 RequestModel request = (RequestModel) obj;
-                System.out.println(request);
+                if (request == null)
+                    return;
                 handleRequest(request, client);
                 //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
                 cachedSockets.put(request.getSenderid(), client);
                 selectionKey.interestOps(SelectionKey.OP_READ);
                 client.register(selector, SelectionKey.OP_WRITE);
             } catch (IOException e) {
-                System.out.println("读取客户端发送数据失败，终止失败操作");
+                selectionKey.cancel();
+                System.out.println("读取客户端数据失败，关闭对应的连接");
                 return;
             }
 

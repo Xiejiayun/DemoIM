@@ -29,6 +29,4 @@ public interface IMClient {
      * @param message    发送消息
      */
     void message(String senerid, String receiverid, String message);
-
-
 }

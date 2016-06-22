@@ -7,7 +7,7 @@ package com.netease.corp.hzxiejiayun.common.model;
  */
 public class BaseModel {
     //协议的类型
-    private int protocolType;//0:connection 1:login 2:add friend 3:send message
+    private int protocolType;//0:connection 1:login 2:add friend 3:send message 4:login response
     //消息id,每个客户端从1开始递增
     private int messageid;
     //发送者的用户id

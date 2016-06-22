@@ -5,6 +5,7 @@ import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
+import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
 import java.io.IOException;
@@ -13,10 +14,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by hzxiejiayun on 2016/6/14.
@@ -27,8 +25,28 @@ public class DefaultIMClient implements IMClient {
 
     SocketChannel socketChannel = null;
     Selector selector = null;
+    String uid = null;
     ByteBuffer send = null;
     ByteBuffer receive = ByteBuffer.allocate(1024);
+
+    public DefaultIMClient() {
+        init();
+    }
+
+    /**
+     * 初始化Selector和SocketChannel
+     */
+    private void init() {
+        try {
+            socketChannel = SocketChannel.open();
+            selector = Selector.open();
+            socketChannel.configureBlocking(false);
+            socketChannel.connect(new InetSocketAddress("localhost", 6666));
+            socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         DefaultIMClient client = new DefaultIMClient();
@@ -41,19 +59,13 @@ public class DefaultIMClient implements IMClient {
         RequestModel requestModel = new RequestModel();
         requestModel.setProtocolType(1);
         requestModel.setHost(NetworkUtils.getHost());
-        Map<String, String> extras = new HashMap<String, String>();
+        requestModel.setTimestamp(DateUtils.format(new Date()));
+        //这边以用户的uid作为Senderid
+        requestModel.setSenderid(username);
+        Map<String, String> extras = new HashMap<>();
         extras.put("username", username);
         extras.put("password", password);
         requestModel.setExtras(extras);
-        try {
-            socketChannel = SocketChannel.open();
-            selector = Selector.open();
-            socketChannel.configureBlocking(false);
-            socketChannel.connect(new InetSocketAddress("localhost", 6666));
-            socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         while (true) {
             try {
@@ -64,23 +76,10 @@ public class DefaultIMClient implements IMClient {
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
-                    socketChannel = (SocketChannel) selectionKey.channel();
                     if (selectionKey.isConnectable()) {
                         if (socketChannel.isConnectionPending()) {
                             socketChannel.finishConnect();
-                            System.out.println("Connect completely");
-                            try {
-                                send = CommonWriter.setObject(requestModel);
-                                System.out.println(send.toString());
-                                socketChannel.write(send);
-                            } catch (IOException e) {
-                                try {
-                                    socketChannel.isConnectionPending();
-                                    socketChannel.finishConnect();
-                                } catch (IOException ie) {
-                                    System.out.println("重连失败");
-                                }
-                            }
+                            selectionKey.interestOps(SelectionKey.OP_WRITE);
                         }
                     } else if (selectionKey.isReadable()) {
                         try {
@@ -90,14 +89,20 @@ public class DefaultIMClient implements IMClient {
                             Object obj = CommonReader.getObject(receive);
                             ResponseModel responseModel = (ResponseModel) obj;
                             if (responseModel != null && responseModel.getResponseCode().equals("1")) {
+                                uid = username;
                                 return true;
                             }
                             if (responseModel != null && responseModel.getResponseCode().equals("2")) {
+                                selectionKey.interestOps(SelectionKey.OP_WRITE);
                                 return false;
                             }
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    } else if (selectionKey.isWritable()) {
+                        sendRequest(requestModel);
+                        selectionKey.interestOps(SelectionKey.OP_READ);
                     }
                 }
             } catch (IOException e) {
@@ -113,7 +118,70 @@ public class DefaultIMClient implements IMClient {
 
     @Override
     public void message(String senderid, String receiverid, String message) {
+        RequestModel requestModel = new RequestModel();
+        requestModel.setProtocolType(3);
+        requestModel.setHost(NetworkUtils.getHost());
+        requestModel.setSenderid(senderid);
+        requestModel.setReceiverid(receiverid);
+        requestModel.setTimestamp(DateUtils.format(new Date()));
+        Map<String, String> extras = new HashMap<>();
+        requestModel.setExtras(extras);
+        while (true) {
+            try {
+                if (selector.select() == 0) {
+                    continue;
+                }
+                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                while (iterator.hasNext()) {
+                    SelectionKey selectionKey = iterator.next();
+                    iterator.remove();
+                    System.out.println(selectionKey.interestOps());
+                    if (selectionKey.isConnectable()) {
+                        if (socketChannel.isConnectionPending()) {
+                            socketChannel.finishConnect();
+                            selectionKey.interestOps(SelectionKey.OP_WRITE);
+                        }
+                    } else if (selectionKey.isReadable()) {
+                        try {
+                            receive.clear();
+                            socketChannel.read(receive);
+                            receive.flip();
+                            Object obj = CommonReader.getObject(receive);
+                            ResponseModel responseModel = (ResponseModel) obj;
+                            if (responseModel == null)
+                                continue;
+                            if (responseModel.getResponseCode().equals("1")) {
+                                selectionKey.interestOps(SelectionKey.OP_READ);
+                            }
+                            if (responseModel.getResponseCode().equals("2")) {
+                                selectionKey.interestOps(SelectionKey.OP_WRITE);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (selectionKey.isWritable()) {
+                        sendRequest(requestModel);
+                        selectionKey.interestOps(SelectionKey.OP_READ);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    private void sendRequest(RequestModel requestModel) throws IOException {
+        try {
+            send = CommonWriter.setObject(requestModel);
+            socketChannel.write(send);
+        } catch (IOException e) {
+            try {
+                socketChannel.isConnectionPending();
+                socketChannel.finishConnect();
+            } catch (IOException ie) {
+                System.out.println("重连失败");
+            }
+        }
     }
 
     public void basicInstruction(Scanner in) {
@@ -152,11 +220,26 @@ public class DefaultIMClient implements IMClient {
         String password = in.next();
         boolean userLogin = login(username, password);
         if (userLogin) {
+            System.out.println("||--------Login succeed-------||");
             mainMenuInstruction(in);
         } else {
             System.out.println("||--------Login failed--------||");
             loginInstruction(in);
         }
+    }
+
+    public void chatInstruction(Scanner in) {
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||--------Chat Menu-----------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||----------------------------||");
+        System.out.println("||--Please input the receiver-||");
+        String receiver = in.next();
+        System.out.println("||--Please input the message--||");
+        String message = in.next();
+        message(uid, receiver, message);
+
     }
 
     public void mainMenuInstruction(Scanner in) {
@@ -173,12 +256,13 @@ public class DefaultIMClient implements IMClient {
         String command = in.next();
         if (command.equals("1")) {
             //聊天
+            chatInstruction(in);
         } else if (command.equals("2")) {
             //添加好友
         } else if (command.equals("3")) {
             //退出登录
         } else if (command.equals("0")) {
-
+            System.exit(0);
         } else {
             System.out.println("输入错误，请重新选择");
             mainMenuInstruction(in);

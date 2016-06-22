@@ -1,6 +1,8 @@
 package com.netease.corp.hzxiejiayun.common.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * Created by hzxiejiayun on 2016/6/21.
@@ -9,11 +11,12 @@ import java.util.Date;
  */
 public class DateUtils {
 
-    private String dateFormat = "YYYY-MM-DD hh:mm:ss";
+    private static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     public static String format(Date date) {
         String result = "";
-
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        result = simpleDateFormat.format(date);
         return result;
     }
 }
