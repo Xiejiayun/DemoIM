@@ -91,6 +91,10 @@ public class DefaultIMClient implements IMClient {
                             socketChannel.finishConnect();
                             selectionKey.interestOps(SelectionKey.OP_WRITE);
                         }
+                        if (msgChannel.isConnectionPending()) {
+                            msgChannel.finishConnect();
+                            selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                        }
                     } else if (selectionKey.isReadable()) {
                         try {
                             receive.clear();
@@ -113,7 +117,9 @@ public class DefaultIMClient implements IMClient {
                             e.printStackTrace();
                         }
                     } else if (selectionKey.isWritable()) {
-                        sendRequest(requestModel);
+                        sendRequest(requestModel, socketChannel);
+                        requestModel.setProtocolType(3);
+                        sendRequest(requestModel, msgChannel);
                         selectionKey.interestOps(SelectionKey.OP_READ);
                     }
                 }
@@ -137,11 +143,11 @@ public class DefaultIMClient implements IMClient {
         requestModel.setReceiverid(receiverid);
         Map<String, String> extras = new HashMap<>();
         requestModel.setExtras(extras);
-        try {
-            msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-        } catch (ClosedChannelException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+//        } catch (ClosedChannelException e) {
+//            e.printStackTrace();
+//        }
         while (true) {
             try {
                 if (selector.select() == 0) {
@@ -164,13 +170,13 @@ public class DefaultIMClient implements IMClient {
                             msgChannel.read(receive);
                             receive.flip();
                             Object obj = CommonReader.getObject(receive);
-                            ResponseModel responseModel = (ResponseModel) obj;
-                            if (responseModel == null)
+                            RequestModel requestModel2 = (RequestModel) obj;
+                            if (requestModel2 == null)
                                 continue;
-                            String chattime = responseModel.getTimestamp();
-                            String sender = responseModel.getSenderid();
-                            String receiver = responseModel.getReceiverid();
-                            String msg = responseModel.getExtras().get("textMessage");
+                            String chattime = requestModel2.getTimestamp();
+                            String sender = requestModel2.getSenderid();
+                            String receiver = requestModel2.getReceiverid();
+                            String msg = requestModel2.getExtras().get("message");
                             System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
                             System.out.println(msg);
                         } catch (IOException e) {
@@ -188,7 +194,7 @@ public class DefaultIMClient implements IMClient {
                         }
                         requestModel.getExtras().put("message", sendText);
                         requestModel.setTimestamp(DateUtils.format(new Date()));
-                        sendRequest(requestModel);
+                        sendRequest(requestModel, msgChannel);
                         selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                     }
                 }
@@ -204,7 +210,7 @@ public class DefaultIMClient implements IMClient {
      * @param requestModel
      * @throws IOException
      */
-    private void sendRequest(RequestModel requestModel) throws IOException {
+    private void sendRequest(RequestModel requestModel, SocketChannel socketChannel) throws IOException {
         try {
             send = CommonWriter.setObject(requestModel);
             socketChannel.write(send);

@@ -107,7 +107,9 @@ public class DefaultIMServer implements IMServer {
                     return;
                 System.out.println("接收到从客户端" + request.getSenderid() + "传输过来的消息" + request.toString());
                 //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
-                CachedSocket.cachedSockets.put(request.getSenderid(), client);
+                if (request.getProtocolType() == 3) {
+                    CachedSocket.cachedSockets.put(request.getSenderid(), client);
+                }
                 handleRequest(request, client);
                 selectionKey.interestOps(SelectionKey.OP_READ);
             } catch (IOException e) {
