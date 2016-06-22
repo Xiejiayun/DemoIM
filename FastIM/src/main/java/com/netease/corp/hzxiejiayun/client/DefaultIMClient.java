@@ -296,8 +296,9 @@ public class DefaultIMClient implements IMClient {
         if (!isFriend) {
             System.out.println("User " + receiver + " is not in your friend list");
             chatInstruction(in);
+        } else {
+            message(uid, receiver);
         }
-        message(uid, receiver);
     }
 
 
