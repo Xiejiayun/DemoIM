@@ -5,6 +5,7 @@ import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 import com.netease.corp.hzxiejiayun.server.service.LoginService;
+import com.netease.corp.hzxiejiayun.server.service.MessageService;
 
 import java.nio.channels.SocketChannel;
 import java.util.Date;
@@ -38,7 +39,8 @@ public class DefaultProcessor implements Processor {
         } else if (protocol == 2) {
 
         } else if (protocol == 3) {//发送消息
-
+            MessageService messageService = new MessageService();
+            messageService.service(request, response, socketChannel);
         }
         return;
     }
