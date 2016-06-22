@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -143,11 +142,6 @@ public class DefaultIMClient implements IMClient {
         requestModel.setReceiverid(receiverid);
         Map<String, String> extras = new HashMap<>();
         requestModel.setExtras(extras);
-//        try {
-//            msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-//        } catch (ClosedChannelException e) {
-//            e.printStackTrace();
-//        }
         while (true) {
             try {
                 if (selector.select() == 0) {
@@ -158,11 +152,11 @@ public class DefaultIMClient implements IMClient {
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
-                    System.out.println("当前键所感兴趣的事件" + selectionKey.interestOps());
+//                    System.out.println("当前键所感兴趣的事件" + selectionKey.interestOps());
                     if (selectionKey.isConnectable()) {
                         if (msgChannel.isConnectionPending()) {
                             msgChannel.finishConnect();
-                            selectionKey.interestOps(SelectionKey.OP_WRITE);
+                            selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                         }
                     } else if (selectionKey.isReadable()) {
                         try {
@@ -179,6 +173,7 @@ public class DefaultIMClient implements IMClient {
                             String msg = requestModel2.getExtras().get("message");
                             System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
                             System.out.println(msg);
+                            selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                         } catch (IOException e) {
                             selectionKey.cancel();
                             System.out.println("客户端读取数据失败，关闭对应通道");
@@ -188,7 +183,7 @@ public class DefaultIMClient implements IMClient {
                         InputStreamReader input = new InputStreamReader(System.in);
                         BufferedReader br = new BufferedReader(input);
                         String sendText = br.readLine();
-                        if (sendText.equals("q!")) {
+                        if (sendText.equals("Bye!")) {
                             System.out.println("Bye!");
                             break;
                         }
