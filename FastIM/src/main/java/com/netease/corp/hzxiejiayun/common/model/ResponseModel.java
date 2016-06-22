@@ -44,7 +44,7 @@ public class ResponseModel extends RequestResponseModel implements Serializable 
     public String toString() {
         return "ResponseModel{" +
                 "responseCode='" + responseCode + '\'' +
-                ", responseContent='" + responseContent + '\'' +
-                '}';
+                ",  ='" + responseContent + '\'' +
+                "} " + super.toString();
     }
 }

@@ -32,7 +32,6 @@ public class DefaultProcessor implements Processor {
 
         int protocol = request.getProtocolType();
         if (protocol == 0) {
-
         } else if (protocol == 1) {//登录
             LoginService loginService = new LoginService();
             loginService.service(request, response, socketChannel);

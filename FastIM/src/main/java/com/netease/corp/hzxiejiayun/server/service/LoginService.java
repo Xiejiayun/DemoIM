@@ -7,6 +7,7 @@ import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.protocol.ProtocolParser;
 import com.netease.corp.hzxiejiayun.common.protocol.RequestParser;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
+import com.netease.corp.hzxiejiayun.server.dao.RelationDao;
 import com.netease.corp.hzxiejiayun.server.dao.UserDao;
 import com.netease.corp.hzxiejiayun.server.dataobject.UserDO;
 
@@ -14,6 +15,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
@@ -21,6 +24,7 @@ import java.util.HashMap;
 public class LoginService implements Service {
     private ProtocolParser protocolParser = new RequestParser();
     private UserDao userDao = UserDao.UserDaoHandler.getUserDao();
+    private RelationDao relationDao = RelationDao.RelationDaoHandler.getRelationDao();
 
     @Override
     public void service(RequestModel request, ResponseModel response, SocketChannel socketChannel) {
@@ -39,7 +43,6 @@ public class LoginService implements Service {
             responseModel.setExtras(new HashMap<String, String>());
             System.out.println("Response is " + responseModel);
             sendBuff = CommonWriter.setObject(responseModel);
-            System.out.println("ByteBuffer is " + sendBuff);
             try {
                 socketChannel.write(sendBuff);
             } catch (IOException e) {
@@ -51,10 +54,16 @@ public class LoginService implements Service {
             response.setProtocolType(4);
             response.setResponseCode("1");
             response.setResponseContent("success login");
-            response.setExtras(new HashMap<String, String>());
+            List<UserDO> friends = relationDao.queryFriend(userDO.getId());
+            Map<String, String> extras = new HashMap<>();
+            for (UserDO relationDO : friends) {
+                if (relationDO == null)
+                    continue;
+                extras.put(relationDO.getUid(), relationDO.getUname());
+            }
+            response.setExtras(extras);
             System.out.println("Response is " + response);
             sendBuff = CommonWriter.setObject(response);
-            System.out.println("ByteBuffer is " + sendBuff);
             try {
                 socketChannel.write(sendBuff);
             } catch (IOException e) {

@@ -26,7 +26,6 @@ public interface IMClient {
     /**
      * @param senerid    发送者id
      * @param receiverid 接收者id
-     * @param message    发送消息
      */
-    void message(String senerid, String receiverid, String message);
+    boolean message(String senerid, String receiverid);
 }

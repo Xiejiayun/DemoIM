@@ -51,9 +51,28 @@ public class UserDao {
         String sql = "select * from users where uid='" + uid + "'";
         DaoUtil.getConnection();
         result = DaoUtil.doSql(sql);
-        if (result == null)
+        if (result == null || result.size() == 0)
             return null;
         int id = Integer.parseInt(result.get(0));
+        String uname = result.get(2);
+        String password = result.get(3);
+        user.setId(id);
+        user.setUid(uid);
+        user.setUname(uname);
+        user.setPasswd(password);
+        return user;
+    }
+
+    public UserDO query(int id) {
+        UserDO user = new UserDO();
+        List<String> result = null;
+        String sql = "select * from users where id=" + id;
+        System.out.println(sql);
+        DaoUtil.getConnection();
+        result = DaoUtil.doSql(sql);
+        if (result == null || result.size() == 0)
+            return null;
+        String uid = result.get(1);
         String uname = result.get(2);
         String password = result.get(3);
         user.setId(id);

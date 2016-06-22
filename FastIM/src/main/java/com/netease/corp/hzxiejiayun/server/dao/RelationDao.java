@@ -1,14 +1,19 @@
 package com.netease.corp.hzxiejiayun.server.dao;
 
 import com.netease.corp.hzxiejiayun.server.dataobject.RelationDO;
+import com.netease.corp.hzxiejiayun.server.dataobject.UserDO;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
 public class RelationDao {
+
+    UserDao userDao = UserDao.UserDaoHandler.getUserDao();
 
     public static void main(String[] args) {
         RelationDao relationDao = new RelationDao();
@@ -16,7 +21,7 @@ public class RelationDao {
         System.out.println(list.toString() + list.size());
     }
 
-    boolean add(RelationDO relationDO) {
+    public boolean add(RelationDO relationDO) {
         boolean result = false;
         int userid = relationDO.getUserid();
         int frienduid = relationDO.getFrienduid();
@@ -26,11 +31,11 @@ public class RelationDao {
     }
 
     //这边不提供支持这种更新
-    boolean update(RelationDO baseDO) {
+    public boolean update(RelationDO baseDO) {
         return false;
     }
 
-    boolean delete(int id) {
+    public boolean delete(int id) {
         boolean result = false;
         //这边可能产生SQL注入攻击
         String sql = "delete from relation where id=" + id;
@@ -38,7 +43,7 @@ public class RelationDao {
         return result;
     }
 
-    RelationDO query(int id) {
+    public RelationDO query(int id) {
         RelationDO relationDO = new RelationDO();
         List<String> result = null;
         String sql = "select * from relation where relationid=" + id;
@@ -54,8 +59,9 @@ public class RelationDao {
         return relationDO;
     }
 
-    List<RelationDO> queryFriend(int uid) {
-        List<RelationDO> resultList = new ArrayList<>();
+    public List<UserDO> queryFriend(int uid) {
+        List<UserDO> resultList = new ArrayList<>();
+        Set<Integer> friendIds = new HashSet<>();
         List<String> result = null;
         String sql = "select relationid from relation where uid=" + uid + " or frienduid=" + uid;
         DaoUtil.getConnection();
@@ -65,10 +71,24 @@ public class RelationDao {
         for (String sid : result) {
             Integer id = Integer.parseInt(sid);
             RelationDO relationDO = query(id);
-            resultList.add(relationDO);
+            friendIds.add(relationDO.getUserid());
+            friendIds.add(relationDO.getFrienduid());
+        }
+        friendIds.remove(uid);
+        for (int friendid : friendIds) {
+            UserDO userDO = userDao.query(friendid);
+            resultList.add(userDO);
         }
         return resultList;
     }
 
+    public static class RelationDaoHandler {
+
+        private static RelationDao relationDao = new RelationDao();
+
+        public static RelationDao getRelationDao() {
+            return relationDao;
+        }
+    }
 
 }

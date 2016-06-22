@@ -41,7 +41,6 @@ public class SendThread extends Thread {
                 sendBuf = CommonWriter.setObject(requestModel);
                 System.out.println(requestModel);
                 sendBuf.flip();
-                System.out.println();
                 client.write(sendBuf);
             } catch (IOException e) {
                 e.printStackTrace();

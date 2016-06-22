@@ -7,6 +7,7 @@ import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
+import com.netease.corp.hzxiejiayun.common.util.StringUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,6 +24,7 @@ import java.util.*;
  */
 public class DefaultIMClient implements IMClient {
 
+    private static List<String> friendList = new ArrayList<>();
     SocketChannel socketChannel = null;
     Selector selector = null;
     String uid = null;
@@ -31,6 +33,12 @@ public class DefaultIMClient implements IMClient {
 
     public DefaultIMClient() {
         init();
+    }
+
+    public static void main(String[] args) {
+        DefaultIMClient client = new DefaultIMClient();
+        Scanner in = new Scanner(System.in);
+        client.basicInstruction(in);
     }
 
     /**
@@ -46,12 +54,6 @@ public class DefaultIMClient implements IMClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        DefaultIMClient client = new DefaultIMClient();
-        Scanner in = new Scanner(System.in);
-        client.basicInstruction(in);
     }
 
     @Override
@@ -90,6 +92,8 @@ public class DefaultIMClient implements IMClient {
                             ResponseModel responseModel = (ResponseModel) obj;
                             if (responseModel != null && responseModel.getResponseCode().equals("1")) {
                                 uid = username;
+                                Map friendMap = responseModel.getExtras();
+                                printFriendList(friendMap);
                                 return true;
                             }
                             if (responseModel != null && responseModel.getResponseCode().equals("2")) {
@@ -117,7 +121,7 @@ public class DefaultIMClient implements IMClient {
     }
 
     @Override
-    public void message(String senderid, String receiverid, String message) {
+    public boolean message(String senderid, String receiverid) {
         RequestModel requestModel = new RequestModel();
         requestModel.setProtocolType(3);
         requestModel.setHost(NetworkUtils.getHost());
@@ -155,7 +159,7 @@ public class DefaultIMClient implements IMClient {
                             String sender = responseModel.getSenderid();
                             String receiver = responseModel.getReceiverid();
                             String msg = responseModel.getExtras().get("textMessage");
-                            System.out.println(chattime + " Sender: " + sender + " Receiver: "+receiver);
+                            System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
                             System.out.println(msg);
                         } catch (IOException e) {
                             selectionKey.cancel();
@@ -174,6 +178,7 @@ public class DefaultIMClient implements IMClient {
 
     /**
      * 发送对应的请求
+     *
      * @param requestModel
      * @throws IOException
      */
@@ -193,13 +198,13 @@ public class DefaultIMClient implements IMClient {
 
     /**
      * 最基础的信息提示
+     *
      * @param in
      */
     public void basicInstruction(Scanner in) {
-        System.out.println("||----------------------------||");
+        System.out.println("||============================||");
         System.out.println("||----------------------------||");
         System.out.println("||-------Operation Menu-------||");
-        System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
         System.out.println("||------Choose operations-----||");
         System.out.println("1 ：Login");
@@ -221,13 +226,13 @@ public class DefaultIMClient implements IMClient {
 
     /**
      * 登录的信息提示
-     * @param in
+     *
+     * @param in 输入
      */
     public void loginInstruction(Scanner in) {
-        System.out.println("||----------------------------||");
+        System.out.println("||============================||");
         System.out.println("||----------------------------||");
         System.out.println("||-------Login Menu-----------||");
-        System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
         System.out.println("||---Please input your name---||");
         String username = in.next();
@@ -243,11 +248,15 @@ public class DefaultIMClient implements IMClient {
         }
     }
 
+    /**
+     * 打印出用户登录之后的主界面
+     *
+     * @param in 输入
+     */
     public void mainMenuInstruction(Scanner in) {
-        System.out.println("||----------------------------||");
+        System.out.println("||============================||");
         System.out.println("||----------------------------||");
         System.out.println("||--------Main Menu-----------||");
-        System.out.println("||----------------------------||");
         System.out.println("||----------------------------||");
         System.out.println("||-Please choose your command-||");
         System.out.println("1 ：Chat");
@@ -271,28 +280,57 @@ public class DefaultIMClient implements IMClient {
         loginInstruction(in);
     }
 
+    /**
+     * 打印出聊天的提示界面
+     *
+     * @param in 输入
+     */
     public void chatInstruction(Scanner in) {
-        System.out.println("||----------------------------||");
+        System.out.println("||============================||");
         System.out.println("||----------------------------||");
         System.out.println("||--------Chat Menu-----------||");
         System.out.println("||----------------------------||");
-        System.out.println("||----------------------------||");
         System.out.println("||--Please input the receiver-||");
         String receiver = in.next();
-        System.out.println("||--Please input the message--||");
-        String message = in.next();
-        message(uid, receiver, message);
-
+        boolean isFriend = isInFriendList(receiver);
+        if (!isFriend) {
+            System.out.println("User " + receiver + " is not in your friend list");
+            chatInstruction(in);
+        }
+        message(uid, receiver);
     }
 
-    public void friendListInstruction(Scanner in) {
+
+    /**
+     * 打印当前用户的好友列表
+     *
+     * @param friendMap 好友列表映射Map
+     */
+    public void printFriendList(Map<String, String> friendMap) {
+        System.out.println("||============================||");
         System.out.println("||----------------------------||");
+        System.out.println("||-------Your FiendList-------||");
         System.out.println("||----------------------------||");
-        System.out.println("||-------FiendList Menu-------||");
-        System.out.println("||----------------------------||");
-        System.out.println("||----------------------------||");
-        System.out.println("||-Please input your password-||");
-        String password = in.next();
-        friend("", password);
+        int index = 1;
+        for (String key : friendMap.keySet()) {
+            System.out.println("||---" + (index++) + " " + key);
+            friendList.add(key);
+        }
+        System.out.println("||============================||");
+    }
+
+    /**
+     * 判断用户所输入的接收者是否为用户的好友
+     *
+     * @param username 接收者姓名
+     * @return 是否好友
+     */
+    public boolean isInFriendList(String username) {
+        for (String friendname : friendList) {
+            if (StringUtils.equals(username, friendname)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

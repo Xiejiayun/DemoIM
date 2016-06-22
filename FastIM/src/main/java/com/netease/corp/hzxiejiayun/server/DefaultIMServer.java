@@ -15,9 +15,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,7 +25,6 @@ public class DefaultIMServer implements IMServer {
 
     private static int port = 6666;
     Selector selector;
-    private Map<String, SocketChannel> cachedSockets = new HashMap<>();
     private ByteBuffer send = ByteBuffer.allocate(1024);
     private ByteBuffer receive = ByteBuffer.allocate(1024);
 
@@ -99,20 +96,25 @@ public class DefaultIMServer implements IMServer {
             System.out.println("服务端读取数据……");
             client = (SocketChannel) selectionKey.channel();
             receive.clear();
+            RequestModel request = null;
             try {
                 while (client.read(receive) > 0) {
                     receive.flip();
                 }
                 Object obj = CommonReader.getObject(receive);
-                RequestModel request = (RequestModel) obj;
+                request = (RequestModel) obj;
                 if (request == null)
                     return;
-                handleRequest(request, client);
+                System.out.println("接收到从客户端" + request.getSenderid() + "传输过来的消息" + request.toString());
                 //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
-                cachedSockets.put(request.getSenderid(), client);
+                CachedSocket.cachedSockets.put(request.getSenderid(), client);
+                handleRequest(request, client);
                 selectionKey.interestOps(SelectionKey.OP_READ);
             } catch (IOException e) {
                 //这个步骤需要将对应的selectionKey移除
+                if (request != null && (request.getSenderid() != null)) {
+                    CachedSocket.cachedSockets.remove(request.getSenderid());
+                }
                 selectionKey.cancel();
                 System.out.println("读取客户端数据失败，关闭对应的连接");
                 return;
