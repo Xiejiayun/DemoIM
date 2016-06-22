@@ -1,7 +1,5 @@
 package com.netease.corp.hzxiejiayun.server.dataobject;
 
-import java.util.Date;
-
 /**
  * Created by hzxiejiayun on 2016/6/17.
  * <p/>
@@ -12,7 +10,7 @@ public class ChatDO {
     //聊天ID
     private int chatid;
     //聊天时间
-    private Date chattime;
+    private String chattime;
     //消息发送者
     private String sender;
     //消息接收者
@@ -30,11 +28,11 @@ public class ChatDO {
         this.chatid = chatid;
     }
 
-    public Date getChattime() {
+    public String getChattime() {
         return chattime;
     }
 
-    public void setChattime(Date chattime) {
+    public void setChattime(String chattime) {
         this.chattime = chattime;
     }
 

@@ -12,6 +12,8 @@ import java.util.Date;
 
 /**
  * Created by hzxiejiayun on 2016/6/17.
+ * <p/>
+ * 默认的处理器，在这边可以创建请求和响应，并对请求和响应进行处理
  */
 public class DefaultProcessor implements Processor {
 

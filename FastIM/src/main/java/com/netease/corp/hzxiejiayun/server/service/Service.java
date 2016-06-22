@@ -7,6 +7,8 @@ import java.nio.channels.SocketChannel;
 
 /**
  * Created by hzxiejiayun on 2016/6/15.
+ *
+ * 用来处理事件的服务
  */
 public interface Service {
 

@@ -3,13 +3,24 @@ package com.netease.corp.hzxiejiayun.server.dao;
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.server.dataobject.ChatDO;
 
+import java.util.Date;
+
 /**
  * Created by hzxiejiayun on 2016/6/15.
  */
 public class ChatDao {
 
+    public static void main(String[] args) {
+        ChatDO chatDO = new ChatDO();
+        chatDO.setSender("jeremy");
+        chatDO.setReceiver("tom");
+        chatDO.setChattime(new Date());
+        chatDO.setMessage("hi");
+        chatDO.setStatus("");
+    }
+
     //增加聊天记录的操作
-    boolean add(ChatDO chatDO) {
+    public boolean add(ChatDO chatDO) {
         boolean result = false;
         String chattime = DateUtils.format(chatDO.getChattime());
         String sender = chatDO.getSender();
@@ -23,7 +34,7 @@ public class ChatDao {
     }
 
     //在这边应当是没办法更新聊天的记录的
-    boolean update(ChatDO chatDO) {
+    public boolean update(ChatDO chatDO) {
         boolean result = false;
         String sql = "update";
         DaoUtil.getConnection();
@@ -31,15 +42,25 @@ public class ChatDao {
         return result;
     }
 
-    boolean delete(int id) {
+    public boolean delete(int id) {
         boolean result = false;
-        String sql = "delete from chat where ";
+        String sql = "delete from chat where chatid="+id;
         DaoUtil.getConnection();
-        DaoUtil.executeSQL(sql);
+        result = DaoUtil.executeSQL(sql);
         return result;
     }
 
-    ChatDO query(int id) {
+    public ChatDO query(int id) {
         return null;
     }
+
+    public static class ChatDaoHandler {
+
+        private static ChatDao chatDao = new ChatDao();
+
+        public static ChatDao getChatDao() {
+            return chatDao;
+        }
+    }
+
 }

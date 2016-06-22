@@ -121,7 +121,6 @@ public class DefaultIMServer implements IMServer {
                 System.out.println("读取客户端数据失败，关闭对应的连接");
                 return;
             }
-
         } else if (selectionKey.isWritable()) {
             client = (SocketChannel) selectionKey.channel();
             send.clear();
@@ -135,7 +134,10 @@ public class DefaultIMServer implements IMServer {
     }
 
     /**
+     * 通过对request和socket进行处理
+     *
      * @param request
+     * @param socket
      */
     private void handleRequest(RequestModel request, SocketChannel socket) {
         Processor processor = new DefaultProcessor();
