@@ -36,6 +36,7 @@ public class MessageService implements Service {
             SocketChannel receiverChannel = CachedSocket.cachedSockets.get(receiver);
             try {
                 receiverChannel.write(sendBuff);
+                System.out.println(receiverChannel + request.toString());
             } catch (IOException e) {
                 System.out.println("消息转发失败");
             }

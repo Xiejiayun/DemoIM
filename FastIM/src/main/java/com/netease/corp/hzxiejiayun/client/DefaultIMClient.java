@@ -138,7 +138,7 @@ public class DefaultIMClient implements IMClient {
         Map<String, String> extras = new HashMap<>();
         requestModel.setExtras(extras);
         try {
-            msgChannel.register(selector, SelectionKey.OP_CONNECT |SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         } catch (ClosedChannelException e) {
             e.printStackTrace();
         }
@@ -148,9 +148,11 @@ public class DefaultIMClient implements IMClient {
                     continue;
                 }
                 Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
+                    System.out.println("当前键所感兴趣的事件" + selectionKey.interestOps());
                     if (selectionKey.isConnectable()) {
                         if (msgChannel.isConnectionPending()) {
                             msgChannel.finishConnect();
