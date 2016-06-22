@@ -9,9 +9,12 @@ import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 import com.netease.corp.hzxiejiayun.common.util.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -26,6 +29,7 @@ public class DefaultIMClient implements IMClient {
 
     private static List<String> friendList = new ArrayList<>();
     SocketChannel socketChannel = null;
+    SocketChannel msgChannel = null;
     Selector selector = null;
     String uid = null;
     ByteBuffer send = null;
@@ -51,6 +55,10 @@ public class DefaultIMClient implements IMClient {
             socketChannel.configureBlocking(false);
             socketChannel.connect(new InetSocketAddress("localhost", 6666));
             socketChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            msgChannel = SocketChannel.open();
+            msgChannel.configureBlocking(false);
+            msgChannel.connect(new InetSocketAddress("localhost", 6666));
+            msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,9 +135,13 @@ public class DefaultIMClient implements IMClient {
         requestModel.setHost(NetworkUtils.getHost());
         requestModel.setSenderid(senderid);
         requestModel.setReceiverid(receiverid);
-        requestModel.setTimestamp(DateUtils.format(new Date()));
         Map<String, String> extras = new HashMap<>();
         requestModel.setExtras(extras);
+        try {
+            msgChannel.register(selector, SelectionKey.OP_CONNECT |SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        } catch (ClosedChannelException e) {
+            e.printStackTrace();
+        }
         while (true) {
             try {
                 if (selector.select() == 0) {
@@ -139,17 +151,15 @@ public class DefaultIMClient implements IMClient {
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
-                    System.out.println(selectionKey.interestOps());
                     if (selectionKey.isConnectable()) {
-                        if (socketChannel.isConnectionPending()) {
-                            socketChannel.finishConnect();
+                        if (msgChannel.isConnectionPending()) {
+                            msgChannel.finishConnect();
                             selectionKey.interestOps(SelectionKey.OP_WRITE);
-                            new SendThread(socketChannel).start();
                         }
                     } else if (selectionKey.isReadable()) {
                         try {
                             receive.clear();
-                            socketChannel.read(receive);
+                            msgChannel.read(receive);
                             receive.flip();
                             Object obj = CommonReader.getObject(receive);
                             ResponseModel responseModel = (ResponseModel) obj;
@@ -166,8 +176,18 @@ public class DefaultIMClient implements IMClient {
                             System.out.println("客户端读取数据失败，关闭对应通道");
                         }
                     } else if (selectionKey.isWritable()) {
+                        System.out.println("||--Please input the message--||");
+                        InputStreamReader input = new InputStreamReader(System.in);
+                        BufferedReader br = new BufferedReader(input);
+                        String sendText = br.readLine();
+                        if (sendText.equals("q!")) {
+                            System.out.println("Bye!");
+                            break;
+                        }
+                        requestModel.getExtras().put("message", sendText);
+                        requestModel.setTimestamp(DateUtils.format(new Date()));
                         sendRequest(requestModel);
-                        selectionKey.interestOps(SelectionKey.OP_READ);
+                        selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                     }
                 }
             } catch (IOException e) {

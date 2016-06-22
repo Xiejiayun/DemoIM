@@ -67,7 +67,6 @@ public class UserDao {
         UserDO user = new UserDO();
         List<String> result = null;
         String sql = "select * from users where id=" + id;
-        System.out.println(sql);
         DaoUtil.getConnection();
         result = DaoUtil.doSql(sql);
         if (result == null || result.size() == 0)
