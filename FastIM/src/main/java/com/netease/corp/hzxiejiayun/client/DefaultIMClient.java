@@ -39,7 +39,7 @@ public class DefaultIMClient implements IMClient {
     //需要传输的数据
     ByteBuffer send = null;
     //需要接收的数据
-    ByteBuffer receive = ByteBuffer.allocate(2048);
+    ByteBuffer receive = ByteBuffer.allocate(20480);
 
     public DefaultIMClient() {
         init();
@@ -166,13 +166,14 @@ public class DefaultIMClient implements IMClient {
     @Override
     public boolean message(String senderid, String receiverid) {
         RequestModel requestModel = getMessageRequestModel(senderid, receiverid);
+        System.out.println("||--Please input the message--||");
+        System.out.println("||-------Bye! to quit---------||");
         while (true) {
             try {
                 if (selector.select() == 0) {
                     continue;
                 }
                 Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
@@ -198,10 +199,18 @@ public class DefaultIMClient implements IMClient {
                             System.out.println("客户端读取数据失败，关闭对应通道");
                         }
                     } else if (selectionKey.isWritable()) {
-                        System.out.println("||--Please input the message--||");
+
+                        String sendText = "";
                         InputStreamReader input = new InputStreamReader(System.in);
                         BufferedReader br = new BufferedReader(input);
-                        String sendText = br.readLine();
+                        long end = System.currentTimeMillis() + 60 * 10;
+                        while ((System.currentTimeMillis() < end)) {
+                            if (br.ready()) {
+                                sendText = br.readLine();
+                            }
+                        }
+                        if (sendText == null || sendText.equals(""))
+                            continue;
                         if (sendText.equals("Bye!")) {
                             System.out.println("Bye!");
                             mainMenuInstruction(new Scanner(System.in));
@@ -246,7 +255,7 @@ public class DefaultIMClient implements IMClient {
         String chattime = requestModel.getTimestamp();
         String sender = requestModel.getSenderid();
         String receiver = requestModel.getReceiverid();
-        String msg = (String)requestModel.getExtras().get("message");
+        String msg = (String) requestModel.getExtras().get("message");
         System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
         System.out.println(msg);
     }
