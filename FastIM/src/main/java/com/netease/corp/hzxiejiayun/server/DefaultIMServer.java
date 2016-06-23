@@ -25,8 +25,8 @@ public class DefaultIMServer implements IMServer {
 
     private static int port = 6666;
     Selector selector;
-    private ByteBuffer send = ByteBuffer.allocate(1024);
-    private ByteBuffer receive = ByteBuffer.allocate(1024);
+    private ByteBuffer send = ByteBuffer.allocate(20480);
+    private ByteBuffer receive = ByteBuffer.allocate(20480);
 
     public DefaultIMServer() {
         init(port);
@@ -50,6 +50,7 @@ public class DefaultIMServer implements IMServer {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             System.out.println("服务端启动，开始监听" + port + "端口……");
+            new Thread(new CachedSocket()).start();
         } catch (BindException bindException) {
             System.out.println("地址已经在使用……");
             System.exit(0);

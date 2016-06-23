@@ -8,6 +8,7 @@ import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.protocol.ProtocolParser;
 import com.netease.corp.hzxiejiayun.common.protocol.RequestParser;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
+import com.netease.corp.hzxiejiayun.server.CachedHeartBeat;
 import com.netease.corp.hzxiejiayun.server.convertor.ChatConvertor;
 import com.netease.corp.hzxiejiayun.server.dao.ChatDao;
 import com.netease.corp.hzxiejiayun.server.dao.RelationDao;
@@ -52,6 +53,7 @@ public class LoginService implements Service {
                 e.printStackTrace();
             }
         } else {
+            CachedHeartBeat.put(request.getSenderid(), request.getTimestamp());
             System.out.println("登录成功！");
             response.setHost(NetworkUtils.getHost());
             response.setProtocolType(4);

@@ -29,14 +29,16 @@ public class HeartbeatThread extends Thread {
     public void run() {
         while (true) {
             try {
-                //每隔10秒钟发送一个心跳包
-                Thread.sleep(10000);
+                //每隔一分钟发送一个心跳包
+                Thread.sleep(5000);
                 RequestModel requestModel = new RequestModel();
+                requestModel.setProtocolType(0);
                 requestModel.setHost(NetworkUtils.getHost());
                 requestModel.setTimestamp(DateUtils.format(new Date()));
                 requestModel.setSenderid(user);
                 ByteBuffer sendBuff = CommonWriter.setObject(requestModel);
                 socketChannel.write(sendBuff);
+//                System.out.println(requestModel);
             } catch (InterruptedException e) {
                 System.out.println("发生中断异常");
                 System.exit(0);

@@ -4,6 +4,7 @@ import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
+import com.netease.corp.hzxiejiayun.server.CachedHeartBeat;
 import com.netease.corp.hzxiejiayun.server.service.LoginService;
 import com.netease.corp.hzxiejiayun.server.service.MessageService;
 
@@ -35,6 +36,8 @@ public class DefaultProcessor implements Processor {
 
         int protocol = request.getProtocolType();
         if (protocol == 0) {
+            //这是心跳包的处理机制
+            CachedHeartBeat.put(request.getSenderid(), request.getTimestamp());
         } else if (protocol == 1) {//登录
             LoginService loginService = new LoginService();
             loginService.service(request, response, socketChannel);

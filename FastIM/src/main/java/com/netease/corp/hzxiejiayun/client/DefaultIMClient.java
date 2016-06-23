@@ -1,6 +1,7 @@
 package com.netease.corp.hzxiejiayun.client;
 
 
+import com.netease.corp.hzxiejiayun.client.hearbeat.HeartbeatThread;
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
 import com.netease.corp.hzxiejiayun.common.model.ChatModel;
@@ -105,6 +106,7 @@ public class DefaultIMClient implements IMClient {
                                 printFriendList(friendList);
                                 List<ChatModel> unreadMessages = (List<ChatModel>) extras.get("unreadMessages");
                                 printUnreadMessages(unreadMessages);
+                                new HeartbeatThread(socketChannel, username).start();
                                 return true;
                             }
                             if (responseModel != null && responseModel.getResponseCode().equals("2")) {
@@ -177,7 +179,6 @@ public class DefaultIMClient implements IMClient {
                 while (iterator.hasNext()) {
                     SelectionKey selectionKey = iterator.next();
                     iterator.remove();
-//                    System.out.println("当前键所感兴趣的事件" + selectionKey.interestOps());
                     if (selectionKey.isConnectable()) {
                         if (msgChannel.isConnectionPending()) {
                             msgChannel.finishConnect();
@@ -346,7 +347,6 @@ public class DefaultIMClient implements IMClient {
         System.out.println("||-Please choose your command-||");
         System.out.println("1 ：Chat");
         System.out.println("2 ：Add Friend");
-        System.out.println("3 ：Logout");
         System.out.println("0 ：Exit");
         String command = in.next();
         if (command.equals("1")) {
@@ -354,9 +354,6 @@ public class DefaultIMClient implements IMClient {
             chatInstruction(in);
         } else if (command.equals("2")) {
             //添加好友
-        } else if (command.equals("3")) {
-
-            //退出登录
         } else if (command.equals("0")) {
             System.exit(0);
         } else {
