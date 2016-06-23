@@ -6,4 +6,5 @@ package com.netease.corp.hzxiejiayun.server.dataobject;
  * 用来记录用户的操作的记录
  */
 public class OperationDO {
+
 }

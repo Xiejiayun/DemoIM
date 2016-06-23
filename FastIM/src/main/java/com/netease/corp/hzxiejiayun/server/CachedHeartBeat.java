@@ -14,4 +14,5 @@ public class CachedHeartBeat {
         heartBeatData.put(user, date);
         System.out.println("服务端接收到的心跳包：来自用户"+user+" 在"+ date+" 时刻的心跳包");
     }
+
 }

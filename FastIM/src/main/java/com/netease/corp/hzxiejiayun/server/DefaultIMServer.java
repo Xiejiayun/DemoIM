@@ -138,6 +138,12 @@ public class DefaultIMServer implements IMServer {
         }
     }
 
+    /**
+     * 判断对应的用户是否在线，通过心跳包的形式验证
+     *
+     * @param senderid 用户id
+     * @return 是否在线
+     */
     private boolean isUserOnline(String senderid) {
         boolean isOnline = true;
         while (true) {
