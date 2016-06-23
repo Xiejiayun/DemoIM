@@ -6,11 +6,8 @@ import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.protocol.ProtocolParser;
 import com.netease.corp.hzxiejiayun.common.protocol.RequestParser;
-import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.server.CachedSocket;
 import com.netease.corp.hzxiejiayun.server.dao.ChatDao;
-import com.netease.corp.hzxiejiayun.server.dao.RelationDao;
-import com.netease.corp.hzxiejiayun.server.dao.UserDao;
 import com.netease.corp.hzxiejiayun.server.dataobject.ChatDO;
 
 import java.io.IOException;
@@ -33,7 +30,7 @@ public class MessageService implements Service {
         String senderid = request.getSenderid();
         String receiverid = request.getReceiverid();
         String chattime = request.getTimestamp();
-        String message = request.getExtras().get("message");
+        String message = (String)request.getExtras().get("message");
         chatDO.setSender(senderid);
         chatDO.setReceiver(receiverid);
         chatDO.setChattime(chattime);
@@ -55,6 +52,9 @@ public class MessageService implements Service {
             //将数据写入数据库，等用户登录的时候自己获取
             chatDO.setStatus("n");
         }
-        chatDao.add(chatDO);
+        //receiver id 不为null，表明是第一次加入缓存的操作
+        if (receiverid != null) {
+            chatDao.add(chatDO);
+        }
     }
 }

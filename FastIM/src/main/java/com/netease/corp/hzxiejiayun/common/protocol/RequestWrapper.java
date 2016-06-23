@@ -23,7 +23,7 @@ public class RequestWrapper implements ProtocolWrapper {
         requestModel.setSenderid(baseModel.getSenderid());
         requestModel.setReceiverid(baseModel.getReceiverid());
         requestModel.setTimestamp(baseModel.getTimestamp());
-        Map<String, String> extras = new HashMap<>();
+        Map<String, Object> extras = new HashMap<>();
         int protoType = requestModel.getProtocolType();
         switch (protoType) {
             case 0:

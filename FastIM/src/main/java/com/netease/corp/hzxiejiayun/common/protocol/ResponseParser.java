@@ -21,7 +21,7 @@ public class ResponseParser implements ProtocolParser {
         ResponseModel responseModel = (ResponseModel) model;
         //协议的类型
         int protocolType = responseModel.getProtocolType();//0:connection 1:login 2:add friend 3:send message
-        Map<String, String> extras = responseModel.getExtras();
+        Map<String, Object> extras = responseModel.getExtras();
         if (protocolType == 0) {
             ConnectionModel connectionModel = new ConnectionModel();
             connectionModel.setProtocolType(responseModel.getProtocolType());
@@ -52,7 +52,7 @@ public class ResponseParser implements ProtocolParser {
             messageModel.setTimestamp(responseModel.getTimestamp());
             messageModel.setResponseCode(responseModel.getResponseCode());
             messageModel.setResponseContent(responseModel.getResponseContent());
-            messageModel.setTextMessage(extras.get("textMessage"));
+            messageModel.setTextMessage((String)extras.get("textMessage"));
             return messageModel;
         }
         return new BaseModel();

@@ -13,6 +13,6 @@ public class RequestModel extends RequestResponseModel implements Serializable {
 
     public RequestModel() {
         super();
-        this.setExtras(new HashMap<String, String>());
+        this.setExtras(new HashMap<String, Object>());
     }
 }

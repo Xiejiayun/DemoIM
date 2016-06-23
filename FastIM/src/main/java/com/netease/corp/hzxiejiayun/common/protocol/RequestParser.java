@@ -22,7 +22,7 @@ public class RequestParser implements ProtocolParser {
     public BaseModel parse(RequestResponseModel model) {
         //协议的类型
         int protocolType = model.getProtocolType();//0:connection 1:login 2:add friend 3:send message
-        Map<String, String> extras = model.getExtras();
+        Map<String, Object> extras = model.getExtras();
         if (protocolType == 0) {
             ConnectionModel connectionModel = new ConnectionModel();
             connectionModel.setProtocolType(model.getProtocolType());
@@ -37,8 +37,8 @@ public class RequestParser implements ProtocolParser {
             loginModel.setSenderid(model.getSenderid());
             loginModel.setReceiverid(model.getReceiverid());
             loginModel.setTimestamp(model.getTimestamp());
-            loginModel.setUsername(extras.get("username"));
-            loginModel.setPassword(extras.get("password"));
+            loginModel.setUsername((String)extras.get("username"));
+            loginModel.setPassword((String)extras.get("password"));
             return loginModel;
         } else if (protocolType == 2) {
             MessageModel messageModel = new MessageModel();
@@ -49,7 +49,7 @@ public class RequestParser implements ProtocolParser {
             messageModel.setSenderid(model.getSenderid());
             messageModel.setReceiverid(model.getReceiverid());
             messageModel.setTimestamp(model.getTimestamp());
-            messageModel.setTextMessage(extras.get("textMessage"));
+            messageModel.setTextMessage((String)extras.get("textMessage"));
             return messageModel;
         }
         return new BaseModel();

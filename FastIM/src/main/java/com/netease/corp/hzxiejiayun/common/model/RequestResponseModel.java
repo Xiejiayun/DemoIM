@@ -22,7 +22,7 @@ public class RequestResponseModel implements Serializable {
     //用户的登录状态
     private int userStatus;
     //用来存放其他类型数据的Map
-    private Map<String, String> extras;
+    private Map<String, Object> extras;
 
     public int getProtocolType() {
         return protocolType;
@@ -72,11 +72,11 @@ public class RequestResponseModel implements Serializable {
         this.receiverid = receiverid;
     }
 
-    public Map<String, String> getExtras() {
+    public Map<String, Object> getExtras() {
         return extras;
     }
 
-    public void setExtras(Map<String, String> extras) {
+    public void setExtras(Map<String, Object> extras) {
         this.extras = extras;
     }
 

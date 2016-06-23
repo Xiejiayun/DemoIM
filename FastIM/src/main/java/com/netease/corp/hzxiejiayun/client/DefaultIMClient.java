@@ -3,6 +3,7 @@ package com.netease.corp.hzxiejiayun.client;
 
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.io.CommonWriter;
+import com.netease.corp.hzxiejiayun.common.model.ChatModel;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
@@ -27,12 +28,18 @@ import java.util.*;
 public class DefaultIMClient implements IMClient {
 
     private static List<String> friendList = new ArrayList<>();
+    //正常登录所使用的通道
     SocketChannel socketChannel = null;
+    //聊天所使用的通道
     SocketChannel msgChannel = null;
+    //客户端用来收发消息的选择器
     Selector selector = null;
+    //当前登录用户的uid
     String uid = null;
+    //需要传输的数据
     ByteBuffer send = null;
-    ByteBuffer receive = ByteBuffer.allocate(1024);
+    //需要接收的数据
+    ByteBuffer receive = ByteBuffer.allocate(2048);
 
     public DefaultIMClient() {
         init();
@@ -59,23 +66,13 @@ public class DefaultIMClient implements IMClient {
             msgChannel.connect(new InetSocketAddress("localhost", 6666));
             msgChannel.register(selector, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("初始化套接字通道失败");
         }
     }
 
     @Override
     public boolean login(String username, String password) {
-        RequestModel requestModel = new RequestModel();
-        requestModel.setProtocolType(1);
-        requestModel.setHost(NetworkUtils.getHost());
-        requestModel.setTimestamp(DateUtils.format(new Date()));
-        //这边以用户的uid作为Senderid
-        requestModel.setSenderid(username);
-        Map<String, String> extras = new HashMap<>();
-        extras.put("username", username);
-        extras.put("password", password);
-        requestModel.setExtras(extras);
-
+        RequestModel requestModel = getRequestModel(username, password);
         while (true) {
             try {
                 if (selector.select() == 0) {
@@ -103,17 +100,20 @@ public class DefaultIMClient implements IMClient {
                             ResponseModel responseModel = (ResponseModel) obj;
                             if (responseModel != null && responseModel.getResponseCode().equals("1")) {
                                 uid = username;
-                                Map friendMap = responseModel.getExtras();
-                                printFriendList(friendMap);
+                                Map extras = responseModel.getExtras();
+                                friendList = (List<String>) extras.get("friendList");
+                                printFriendList(friendList);
+                                List<ChatModel> unreadMessages = (List<ChatModel>) extras.get("unreadMessages");
+                                printUnreadMessages(unreadMessages);
                                 return true;
                             }
                             if (responseModel != null && responseModel.getResponseCode().equals("2")) {
                                 selectionKey.interestOps(SelectionKey.OP_WRITE);
                                 return false;
                             }
-
                         } catch (IOException e) {
                             e.printStackTrace();
+                            System.out.println("初始登录响应失败");
                         }
                     } else if (selectionKey.isWritable()) {
                         sendRequest(requestModel, socketChannel);
@@ -123,9 +123,39 @@ public class DefaultIMClient implements IMClient {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("登录模块发生IO异常");
             }
         }
+    }
+
+    private void printUnreadMessages(List<ChatModel> unreadMessages) {
+        System.out.println("||============================||");
+        System.out.println("||----------------------------||");
+        System.out.println("||-------Unread Messages------||");
+        System.out.println("||----------------------------||");
+        for (ChatModel chatModel : unreadMessages) {
+            String chattime = chatModel.getChattime();
+            String sender = chatModel.getSender();
+            String receiver = chatModel.getReceiver();
+            String msg = chatModel.getMessage();
+            System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
+            System.out.println(msg);
+        }
+        System.out.println("||============================||");
+    }
+
+    private RequestModel getRequestModel(String username, String password) {
+        RequestModel requestModel = new RequestModel();
+        requestModel.setProtocolType(1);
+        requestModel.setHost(NetworkUtils.getHost());
+        requestModel.setTimestamp(DateUtils.format(new Date()));
+        //这边以用户的uid作为Senderid
+        requestModel.setSenderid(username);
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("username", username);
+        extras.put("password", password);
+        requestModel.setExtras(extras);
+        return requestModel;
     }
 
     @Override
@@ -135,13 +165,7 @@ public class DefaultIMClient implements IMClient {
 
     @Override
     public boolean message(String senderid, String receiverid) {
-        RequestModel requestModel = new RequestModel();
-        requestModel.setProtocolType(3);
-        requestModel.setHost(NetworkUtils.getHost());
-        requestModel.setSenderid(senderid);
-        requestModel.setReceiverid(receiverid);
-        Map<String, String> extras = new HashMap<>();
-        requestModel.setExtras(extras);
+        RequestModel requestModel = getMessageRequestModel(senderid, receiverid);
         while (true) {
             try {
                 if (selector.select() == 0) {
@@ -167,12 +191,7 @@ public class DefaultIMClient implements IMClient {
                             RequestModel requestModel2 = (RequestModel) obj;
                             if (requestModel2 == null)
                                 continue;
-                            String chattime = requestModel2.getTimestamp();
-                            String sender = requestModel2.getSenderid();
-                            String receiver = requestModel2.getReceiverid();
-                            String msg = requestModel2.getExtras().get("message");
-                            System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
-                            System.out.println(msg);
+                            printMessage(requestModel2);
                             selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                         } catch (IOException e) {
                             selectionKey.cancel();
@@ -185,6 +204,7 @@ public class DefaultIMClient implements IMClient {
                         String sendText = br.readLine();
                         if (sendText.equals("Bye!")) {
                             System.out.println("Bye!");
+                            mainMenuInstruction(new Scanner(System.in));
                             break;
                         }
                         requestModel.getExtras().put("message", sendText);
@@ -194,15 +214,48 @@ public class DefaultIMClient implements IMClient {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("发送消息模块失败");
             }
         }
     }
 
     /**
+     * 通过消息的发送者和接收者生成请求模型
+     *
+     * @param senderid   发送者id
+     * @param receiverid 接收者id
+     * @return 请求模型
+     */
+    private RequestModel getMessageRequestModel(String senderid, String receiverid) {
+        RequestModel requestModel = new RequestModel();
+        requestModel.setProtocolType(3);
+        requestModel.setHost(NetworkUtils.getHost());
+        requestModel.setSenderid(senderid);
+        requestModel.setReceiverid(receiverid);
+        Map<String, Object> extras = new HashMap<>();
+        requestModel.setExtras(extras);
+        return requestModel;
+    }
+
+    /**
+     * 打印出请求模型所发送过来的消息
+     *
+     * @param requestModel 请求模型
+     */
+    private void printMessage(RequestModel requestModel) {
+        String chattime = requestModel.getTimestamp();
+        String sender = requestModel.getSenderid();
+        String receiver = requestModel.getReceiverid();
+        String msg = (String)requestModel.getExtras().get("message");
+        System.out.println(chattime + " Sender: " + sender + " Receiver: " + receiver);
+        System.out.println(msg);
+    }
+
+    /**
      * 发送对应的请求
      *
-     * @param requestModel
+     * @param requestModel  请求模型
+     * @param socketChannel 套接字通道
      * @throws IOException
      */
     private void sendRequest(RequestModel requestModel, SocketChannel socketChannel) throws IOException {
@@ -293,6 +346,7 @@ public class DefaultIMClient implements IMClient {
         } else if (command.equals("2")) {
             //添加好友
         } else if (command.equals("3")) {
+
             //退出登录
         } else if (command.equals("0")) {
             System.exit(0);
@@ -328,17 +382,16 @@ public class DefaultIMClient implements IMClient {
     /**
      * 打印当前用户的好友列表
      *
-     * @param friendMap 好友列表映射Map
+     * @param friendList 好友列表映射Map
      */
-    public void printFriendList(Map<String, String> friendMap) {
+    public void printFriendList(List<String> friendList) {
         System.out.println("||============================||");
         System.out.println("||----------------------------||");
         System.out.println("||-------Your FiendList-------||");
         System.out.println("||----------------------------||");
         int index = 1;
-        for (String key : friendMap.keySet()) {
+        for (String key : friendList) {
             System.out.println("||---" + (index++) + " " + key);
-            friendList.add(key);
         }
         System.out.println("||============================||");
     }

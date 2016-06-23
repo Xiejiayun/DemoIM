@@ -1,11 +1,11 @@
-package com.netease.corp.hzxiejiayun.server.dataobject;
+package com.netease.corp.hzxiejiayun.common.model;
+
+import java.io.Serializable;
 
 /**
- * Created by hzxiejiayun on 2016/6/17.
- * <p/>
- * 用来存储用户聊天的记录
+ * Created by hzxiejiayun on 2016/6/23.
  */
-public class ChatDO {
+public class ChatModel implements Serializable{
 
     //聊天ID
     private int chatid;
@@ -66,17 +66,5 @@ public class ChatDO {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "ChatDO{" +
-                "chatid=" + chatid +
-                ", chattime='" + chattime + '\'' +
-                ", sender='" + sender + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", message='" + message + '\'' +
-                ", status='" + status + '\'' +
-                '}';
     }
 }

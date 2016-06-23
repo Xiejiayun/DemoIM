@@ -7,6 +7,7 @@ import com.netease.corp.hzxiejiayun.common.util.NetworkUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Created by hzxiejiayun on 2016/6/20.
@@ -29,7 +30,7 @@ public class Test {
         response.setHost(NetworkUtils.getHost());
         response.setResponseCode("1");
         response.setResponseContent("success login");
-        response.setExtras(new HashMap<String, String>());
+        response.setExtras(new HashMap<String, Object>());
         ByteBuffer responseBuff = CommonWriter.setObject(response);
         System.out.println(responseBuff.toString());
         Object responseObj = CommonReader.getObject(responseBuff);
