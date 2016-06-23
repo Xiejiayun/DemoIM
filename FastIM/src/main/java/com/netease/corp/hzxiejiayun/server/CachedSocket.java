@@ -2,6 +2,7 @@ package com.netease.corp.hzxiejiayun.server;
 
 import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class CachedSocket implements Runnable{
 
     public static Map<String, SocketChannel> cachedSockets = new HashMap<>();
+    public static Map<String, SelectionKey> cachedKeys = new HashMap<>();
 
     public static boolean put(String user, SocketChannel socketChannel) {
         if (cachedSockets == null)
@@ -40,6 +42,14 @@ public class CachedSocket implements Runnable{
         return true;
     }
 
+    public static String getUserFromSelectionKey(SelectionKey selectionKey) {
+        for (String user : cachedKeys.keySet()) {
+            SelectionKey key = cachedKeys.get(user);
+            if (key.equals(selectionKey))
+                return user;
+        }
+        return null;
+    }
 
     /**
      * When an object implementing interface <code>Runnable</code> is used
@@ -63,9 +73,12 @@ public class CachedSocket implements Runnable{
                 Date heartBeatDate = DateUtils.parse(heartbeat);
                 long gap = DateUtils.gap(current, heartBeatDate);
                 double minutes = (double)gap/60000;
-                if (minutes > 3) {
-                    //如果用户超时三分钟，则删除指定用户
-                    cachedSockets.remove(user);
+                if (minutes > 1) {
+                    //如果用户超时1分钟，则删除指定用户
+                    CachedSocket.cachedSockets.remove(user);
+                    CachedSocket.cachedKeys.remove(user);
+                    System.out.println("心跳包1分钟没有响应，关闭用户" + user + "的通道");
+                    break;
                 }
             }
         }

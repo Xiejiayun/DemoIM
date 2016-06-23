@@ -3,6 +3,7 @@ package com.netease.corp.hzxiejiayun.server;
 import com.netease.corp.hzxiejiayun.common.io.CommonReader;
 import com.netease.corp.hzxiejiayun.common.model.RequestModel;
 import com.netease.corp.hzxiejiayun.common.model.ResponseModel;
+import com.netease.corp.hzxiejiayun.common.util.DateUtils;
 import com.netease.corp.hzxiejiayun.server.processor.DefaultProcessor;
 import com.netease.corp.hzxiejiayun.server.processor.Processor;
 
@@ -15,6 +16,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -94,7 +96,7 @@ public class DefaultIMServer implements IMServer {
             }
             System.out.println("Acceptable");
         } else if (selectionKey.isReadable()) {
-            System.out.println("服务端读取数据……");
+            System.out.println("接收来自客户端的数据……");
             client = (SocketChannel) selectionKey.channel();
             receive.clear();
             RequestModel request = null;
@@ -110,16 +112,18 @@ public class DefaultIMServer implements IMServer {
                 //在这边在缓存的Sockets里面添加用户和对应Socket的映射关系
                 if (request.getProtocolType() == 3) {
                     CachedSocket.cachedSockets.put(request.getSenderid(), client);
+                    CachedSocket.cachedKeys.put(request.getSenderid(), selectionKey);
                 }
                 handleRequest(request, client);
                 selectionKey.interestOps(SelectionKey.OP_READ);
             } catch (IOException e) {
                 //这个步骤需要将对应的selectionKey移除
-                if (request != null && (request.getSenderid() != null)) {
-                    CachedSocket.cachedSockets.remove(request.getSenderid());
+                String user = CachedSocket.getUserFromSelectionKey(selectionKey);
+                boolean isUserOnline = isUserOnline(user);
+                if (!isUserOnline) {
+                    selectionKey.cancel();
+                    System.out.println("关闭对应的通道");
                 }
-                selectionKey.cancel();
-                System.out.println("读取客户端数据失败，关闭对应的连接");
                 return;
             }
         } else if (selectionKey.isWritable()) {
@@ -132,6 +136,28 @@ public class DefaultIMServer implements IMServer {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean isUserOnline(String senderid) {
+        boolean isOnline = true;
+        while (true) {
+            Date current = new Date();
+            String heartbeat = CachedHeartBeat.heartBeatData.get(senderid);
+            if (heartbeat == null)
+                return false;
+            Date heartBeatDate = DateUtils.parse(heartbeat);
+            long gap = DateUtils.gap(current, heartBeatDate);
+            double seconds = (double) gap / 1000;
+            if (seconds > 15) {
+                //如果用户超时三分钟，则删除指定用户
+                isOnline = false;
+                CachedSocket.cachedSockets.remove(senderid);
+                CachedSocket.cachedKeys.remove(senderid);
+                System.out.println("心跳包15秒没有响应，关闭用户" + senderid + "的通道");
+                break;
+            }
+        }
+        return isOnline;
     }
 
     /**
